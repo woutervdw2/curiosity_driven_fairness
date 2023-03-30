@@ -35,6 +35,9 @@ from metrics import error_metrics
 from metrics import lending_metrics
 from metrics import value_tracking_metrics
 
+
+
+
 MAXIMIZE_REWARD = threshold_policies.ThresholdPolicy.MAXIMIZE_REWARD
 EQUALIZE_OPPORTUNITY = threshold_policies.ThresholdPolicy.EQUALIZE_OPPORTUNITY
 
@@ -110,14 +113,14 @@ class Experiment(core.Params):
             observation_space=env.observation_space,
             params=agent_params)
     elif self.agent.lower() == 'rl':
-       agent = new_agent.RlAgent(
-          action_space=env.action_space,
+       agent = new_agent.RlAgent(action_space=env.action_space,
           reward_fn=rewards.ScalarDeltaReward(
           'bank_cash', baseline=env.initial_params.bank_starting_cash),
           observation_space=env.observation_space
           )
-       
-        
+       agent.load_model("ppo_lending/ppo_lending")
+       print(agent.model)
+
     agent.seed(100)
     print(agent)
     return env, agent

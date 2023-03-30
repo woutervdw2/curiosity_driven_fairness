@@ -65,6 +65,9 @@ class _CashUpdater(core.StateUpdater):
       state.bank_cash -= params.loan_amount
     else:
       state.bank_cash += params.loan_amount * params.interest_rate
+    
+    state.bank_cash = np.float32(state.bank_cash)
+    
 
 
 class _ApplicantSampler(core.StateUpdater):
@@ -124,13 +127,13 @@ class BaseLendingEnv(core.FairnessEnv):
     params = (
         self.default_param_builder() if params is None else params
         )  # type: lending_params.Params
-
+  
     # The action space of the agent is Accept/Reject.
     self.action_space = spaces.Discrete(2)
 
     # Bank's cash is a scalar and cannot be negative.
     bank_cash_space = spaces.Box(
-        low=0, high=params.max_cash, shape=(), dtype=np.float32)
+        low=0, high=params.max_cash, shape=(1,), dtype=np.float32)
 
     # Two-dimensional observation space describes each loan applicant.
     loan_applicant_space = spaces.Box(
@@ -155,7 +158,9 @@ class BaseLendingEnv(core.FairnessEnv):
         # Copy in case state.params get mutated, initial_params stays pristine.
         params=copy.deepcopy(self.initial_params),
         rng=rng or np.random.RandomState(),
-        bank_cash=self.initial_params.bank_starting_cash)
+        bank_cash=np.array([self.initial_params.bank_starting_cash]))
+    if self.reward_fn != None:
+      self.reward_fn.__reset__()
     self._applicant_updater.update(self.state, None)
 
   def reset(self):
@@ -165,7 +170,7 @@ class BaseLendingEnv(core.FairnessEnv):
 
   def _is_done(self):
     """Returns True if the bank cash is less than loan_amount."""
-    return self.state.bank_cash < self.state.params.loan_amount
+    return bool(self.state.bank_cash < self.state.params.loan_amount)
 
   def _step_impl(self, state, action):
     """Run one timestep of the environment's dynamics.

@@ -29,7 +29,7 @@ flags.DEFINE_string('outfile', f'outfiles_{AGENT_NAME}.txt', 'Path to write out 
 flags.DEFINE_string('plots_directory', f'lending_{AGENT_NAME}_plots', 'Directory to write out plots.')
 flags.DEFINE_bool('equalize_opportunity', False,
                   'If true, apply equality of opportunity constraints.')
-flags.DEFINE_integer('num_steps', 5,
+flags.DEFINE_integer('num_steps', 10000,
                      'Number of steps to run the simulation.')
 
 FLAGS = flags.FLAGS
@@ -50,7 +50,7 @@ def main(argv):
   result = lending.Experiment(
       group_0_prob=group_0_prob,
       interest_rate=1.0,
-      bank_starting_cash=10000,
+      bank_starting_cash=np.float32(10000),
       seed=200,
       num_steps=FLAGS.num_steps,
       burnin=200,

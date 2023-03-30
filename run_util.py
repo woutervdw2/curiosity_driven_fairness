@@ -61,6 +61,7 @@ def run_simulation(env, agent, metrics, num_steps, seed=100, agent_seed=50):
     # Update the agent with any changes to the observation or action space.
     agent.action_space, agent.observation_space = (env.action_space,
                                                    env.observation_space)
+    
     action = agent.act(observation, done)
     # TODO(): Remove reward from this loop.
     observation, _, done, _ = env.step(action)

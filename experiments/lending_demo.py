@@ -58,7 +58,7 @@ def main(argv):
   result = lending.Experiment(
       group_0_prob=group_0_prob,
       interest_rate=1.0,
-      bank_starting_cash=10000,
+      bank_starting_cash=np.float32(10000.0),
       seed=200,
       num_steps=FLAGS.num_steps,
       burnin=200,

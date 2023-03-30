@@ -11,7 +11,12 @@ import core
 import params
 from agents import threshold_policies
 import gym
+
 import numpy as np
+import tensorflow as tf
+
+
+from stable_baselines3 import PPO
 
 @attr.s
 class RlAgent(core.Agent):
@@ -22,11 +27,13 @@ class RlAgent(core.Agent):
     action_space = attr.ib(
         factory=lambda: gym.spaces.Discrete(2))
     rng = attr.ib(factory=np.random.RandomState)
+    model = attr.ib(None)
+
+    #function to load model from file
+    def load_model(self, model_file):
+        self.model = PPO.load(model_file)
 
     def _act_impl(self, observation, reward, done):
-        action = self.action_space.sample()
-        print(f"""\n 
-        observation: {self.flatten_features(observation)}\n
-        reward: {reward}\n
-        action: {action}""")
+        """Returns an action based on the observation."""
+        action, _ = self.model.predict(observation)
         return action

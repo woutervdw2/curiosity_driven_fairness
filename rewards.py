@@ -47,6 +47,7 @@ class ScalarDeltaReward(core.RewardFn):
       dict_key: String key for the observation used to compute the reward.
       baseline: value to consider baseline when first computing reward delta.
     """
+    self.baseline = baseline
     self.dict_key = dict_key
     self.last_val = float(baseline)
 
@@ -64,14 +65,20 @@ class ScalarDeltaReward(core.RewardFn):
       TypeError if the observed variable indicated with self.dict_key is not a
         scalar.
     """
-    print(f"""\n reward observation: {float(observation[self.dict_key])}\n
-    dict_key: {self.dict_key}\n
-    last_val: {self.last_val}""")
+
+    #Debug info
+    # print(f"""\n reward observation: {float(observation[self.dict_key])}\n
+    # dict_key: {self.dict_key}\n
+    # last_val: {self.last_val}""")
+
     # Validates that the state variable is a scalar with this float() call.
     current_val = float(observation[self.dict_key])
     retval = current_val - self.last_val
     self.last_val = current_val
     return retval
+  
+  def __reset__(self):
+    self.last_val = self.baseline
 
 
 class BinarizedScalarDeltaReward(ScalarDeltaReward):
