@@ -68,6 +68,7 @@ class SaveActionsCallback(BaseCallback):
         self.group1_rewards = []
 
     def _on_step(self) -> bool:
+        #Save the actions and rewards per group
         group = np.argmax(a=self.locals['obs_tensor']['group'][0].cpu(), axis=0)
         if group == 0:
             self.group0_actions.append(self.locals['actions'])
@@ -81,7 +82,7 @@ class SaveActionsCallback(BaseCallback):
 actions_callback = SaveActionsCallback()
 
 # Train the agent
-agent.learn(total_timesteps=300000
+agent.learn(total_timesteps=30000
             , log_interval=10, tb_log_name=model_name, 
             progress_bar=True, callback=actions_callback)
 
@@ -143,6 +144,17 @@ plt.bar(x=['group0', 'group1'], height=[np.mean(actions_callback.group0_rewards)
                                          np.mean(actions_callback.group1_rewards)])
 plt.title('Average rewards per group')
 plt.savefig(PATH+'average_rewards.png')
+plt.show()
+
+#Show barplots side by side
+fig, (ax1, ax2) = plt.subplots(1, 2)
+fig.suptitle('Average positive actions and rewards per group')
+ax1.bar(x=['group0', 'group1'], height=[np.mean(group0_actions), np.mean(group1_actions)])
+ax1.set_title('Average positive actions')
+ax2.bar(x=['group0', 'group1'], height=[np.mean(actions_callback.group0_rewards),
+                                            np.mean(actions_callback.group1_rewards)])
+ax2.set_title('Average rewards')
+plt.savefig(PATH+'average_positive_actions_rewards.png')
 plt.show()
 
 
