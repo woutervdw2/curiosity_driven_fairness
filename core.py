@@ -339,6 +339,7 @@ class FairnessEnv(gym.Env):
     # TODO(): Remove this completely.
     # For compatibility, compute a reward_fn if one is given.
     reward = self.reward_fn(observation) if self.reward_fn is not None else 0
+
     return observation, reward, self._is_done(), {}
 
   def seed(self, seed = None):

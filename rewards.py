@@ -27,6 +27,8 @@ from typing import Any, Optional
 import core
 import numpy as np
 
+import sys
+
 
 class NullReward(core.RewardFn):
   """Reward is always 0."""
@@ -35,7 +37,6 @@ class NullReward(core.RewardFn):
   def __call__(self, observation):
     del observation  # Unused.
     return 0
-
 
 class ScalarDeltaReward(core.RewardFn):
   """Extracts a scalar reward from the change in a scalar state variable."""
@@ -80,6 +81,141 @@ class ScalarDeltaReward(core.RewardFn):
   def __reset__(self):
     self.last_val = self.baseline
 
+class ScalarDeltaRewardWithUCB(core.RewardFn):
+  def __init__(self, dict_key, baseline=0, c=1.0):
+    """Initializes ScalarDeltaReward.
+
+    Args:
+      dict_key: String key for the observation used to compute the reward.
+      baseline: value to consider baseline when first computing reward delta.
+    """
+    self.baseline = baseline
+    self.dict_key = dict_key
+    self.last_val = float(baseline)
+    self.c = c
+    self.history = []
+
+  # TODO(): Find a better type for observations than Any.
+  def __call__(self, observation):
+    """Computes a scalar reward from observation.
+
+    The scalar reward is computed from the change in a scalar observed variable.
+
+    Args:
+      observation: A dict containing observations.
+    Returns:
+      scalar reward.
+    Raises:
+      TypeError if the observed variable indicated with self.dict_key is not a
+        scalar.
+    """
+
+
+    
+    #Debug info
+    # print(f"""\n reward observation: {float(observation[self.dict_key])}\n
+    # dict_key: {self.dict_key}\n
+
+    # last_val: {self.last_val}""")
+
+    # Validates that the state variable is a scalar with this float() call.
+    current_val = float(observation[self.dict_key])
+    retval = current_val - self.last_val
+    self.last_val = current_val
+
+    UCB = self._calculateUCB()
+
+    total_reward = retval + UCB
+    return total_reward
+  
+  def __reset__(self):
+    self.last_val = self.baseline
+    self.history = []
+  
+  def _update_history(self, action):
+    #Update history with action
+    self.history.append(int(action))
+  
+  def _calculateUCB(self):
+    """Calculate the UCB value for the current history"""
+    #Find last action
+    last_action = self.history[-1]
+    #Find number of times last action was taken
+    num_last_action = self.history.count(last_action)
+
+    #Calculate UCB
+    UCB = self.c * np.sqrt(np.log(len(self.history))/num_last_action)
+    return UCB
+
+class ScalarDeltaRewardVisitCounts(core.RewardFn):
+  def __init__(self, dict_key, baseline=0, beta=1.0):
+    """Initializes ScalarDeltaReward.
+
+    Args:
+      dict_key: String key for the observation used to compute the reward.
+      baseline: value to consider baseline when first computing reward delta.
+    """
+    self.baseline = baseline
+    self.dict_key = dict_key
+    self.last_val = float(baseline)
+    self.beta = beta
+    self.history = {}
+    self.visit_count = None
+
+  # TODO(): Find a better type for observations than Any.
+  def __call__(self, observation):
+    """Computes a scalar reward from observation.
+
+    The scalar reward is computed from the change in a scalar observed variable.
+
+    Args:
+      observation: A dict containing observations.
+    Returns:
+      scalar reward.
+    Raises:
+      TypeError if the observed variable indicated with self.dict_key is not a
+        scalar.
+    """
+
+
+    
+    #Debug info
+    # print(f"""\n reward observation: {float(observation[self.dict_key])}\n
+    # dict_key: {self.dict_key}\n
+
+    # last_val: {self.last_val}""")
+
+    # Validates that the state variable is a scalar with this float() call.
+    current_val = float(observation[self.dict_key])
+    retval = current_val - self.last_val
+    self.last_val = current_val
+
+    total_reward = retval + self.visit_count
+
+    return total_reward
+  
+  def __reset__(self):
+    self.last_val = self.baseline
+    self.history = {}
+  
+  def _update_history(self, state, action):
+    """Update history with action state pair count"""
+    key = str(state.group) + str(action)
+
+    if key in self.history:
+      self.history[key] += 1
+    else:
+      self.history[key] = 1
+    
+    self.visit_count = self._update_visit_count(key)
+  
+  def _update_visit_count(self, key):
+    """Update the current visit count for state action pair"""
+
+    visit_count = self.beta/np.sqrt(self.history[key])
+
+    return visit_count
+    
 
 class BinarizedScalarDeltaReward(ScalarDeltaReward):
   """Extracts a binary reward from the sign of the change in a state variable."""
