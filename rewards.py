@@ -51,6 +51,7 @@ class ScalarDeltaReward(core.RewardFn):
     self.baseline = baseline
     self.dict_key = dict_key
     self.last_val = float(baseline)
+    self.history = []
 
   # TODO(): Find a better type for observations than Any.
   def __call__(self, observation):
@@ -76,6 +77,7 @@ class ScalarDeltaReward(core.RewardFn):
     current_val = float(observation[self.dict_key])
     retval = current_val - self.last_val
     self.last_val = current_val
+    self.history.append(retval)
     return retval
   
   def __reset__(self):
@@ -94,6 +96,9 @@ class ScalarDeltaRewardWithUCB(core.RewardFn):
     self.last_val = float(baseline)
     self.c = c
     self.history = []
+    #History of reward values [retval, UCB]
+    self.value_history = [[], []]
+
 
   # TODO(): Find a better type for observations than Any.
   def __call__(self, observation):
@@ -110,8 +115,6 @@ class ScalarDeltaRewardWithUCB(core.RewardFn):
         scalar.
     """
 
-
-    
     #Debug info
     # print(f"""\n reward observation: {float(observation[self.dict_key])}\n
     # dict_key: {self.dict_key}\n
@@ -124,7 +127,8 @@ class ScalarDeltaRewardWithUCB(core.RewardFn):
     self.last_val = current_val
 
     UCB = self._calculateUCB()
-
+    self.value_history[0].append(retval)
+    self.value_history[1].append(UCB)
     total_reward = retval + UCB
     return total_reward
   
@@ -161,7 +165,8 @@ class ScalarDeltaRewardVisitCounts(core.RewardFn):
     self.beta = beta
     self.history = {}
     self.visit_count = None
-
+    #History of reward values [retval, value count]
+    self.value_history = [[], []]
   # TODO(): Find a better type for observations than Any.
   def __call__(self, observation):
     """Computes a scalar reward from observation.
@@ -176,8 +181,6 @@ class ScalarDeltaRewardVisitCounts(core.RewardFn):
       TypeError if the observed variable indicated with self.dict_key is not a
         scalar.
     """
-
-
     
     #Debug info
     # print(f"""\n reward observation: {float(observation[self.dict_key])}\n
@@ -190,6 +193,8 @@ class ScalarDeltaRewardVisitCounts(core.RewardFn):
     retval = current_val - self.last_val
     self.last_val = current_val
 
+    self.value_history[0].append(retval)
+    self.value_history[1].append(self.visit_count)
     total_reward = retval + self.visit_count
 
     return total_reward

@@ -20,6 +20,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+
 # #Callback saving the actions per group over the course of training
 class SaveActionsCallback(BaseCallback):
     def __init__(self, n_steps=1000, verbose=1):
@@ -71,11 +72,12 @@ def init_env(env_params, rewards='scalar'):
         env.reward_fn = rewards_fn.ScalarDeltaRewardWithUCB(
                     'bank_cash',
                     baseline=env.initial_params.bank_starting_cash,
-                    c=1.0)
+                    c=2.0)
     elif rewards == 'visit_count':
         env.reward_fn = rewards_fn.ScalarDeltaRewardVisitCounts(
                     'bank_cash',
-                    baseline=env.initial_params.bank_starting_cash)
+                    baseline=env.initial_params.bank_starting_cash,
+                    beta=2.0)
     else:
         print('Reward function not recognized')
         sys.exit()
@@ -91,8 +93,9 @@ def init_env(env_params, rewards='scalar'):
 def train_agent(env, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epochs=10, gamma=0.99, clip_range=0.2,
                 seed=None, learning_steps=100000, model_name='ppo_lending',
                   path='models/', rewards='scalar', verbose=1):
+    
     #Create the agent
-    agent = PPO('MultiInputPolicy', env, verbose=1, learning_rate=learning_rate,
+    agent = PPO('MultiInputPolicy', env, verbose=verbose, learning_rate=learning_rate,
                  n_steps=n_steps, batch_size=batch_size, n_epochs=n_epochs, gamma=gamma,
                    clip_range=clip_range, seed=seed)
 
@@ -109,58 +112,68 @@ def train_agent(env, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epochs
 
     return agent, actions_callback
 
-#function to test the agent
-def test_agent(agent, env, n_steps=1000):
+# function to test the agent
+def test_agent(agent, env, n_steps=100, nr_runs=10):
     # Test the trained agent
-    obs = env.reset()
     test_rewards = []
     test_actions = []
-    for _ in range(n_steps):
-        # print('before:', obs)
-        action, __ = agent.predict(obs)
-        # print('action:', action)
-        test_actions.append(action)
-        obs, rewards, done, info = env.step(action)
-        # print('after:', obs)
-        # print('reward:', rewards)
-        test_rewards.append(rewards)
-        if done:
-            obs = env.reset()
+    bank_cash_history = []
+    for _ in range(nr_runs):
+        obs = env.reset()
+        for _ in     range(n_steps):
+            # print('before:', obs)
+            action, __ = agent.predict(obs)
+            # print('action:', action)
+            test_actions.append(action)
+            obs, rewards, done, info = env.step(action)
+            # print('after:', obs)
+            # print('reward:', rewards)
+            test_rewards.append(rewards)
+            if done:
+                bank_cash_history.append(float(obs['bank_cash']))
+                obs = env.reset()
 
+        bank_cash_history.append(float(obs['bank_cash']))
     print(f"""Test results:\n
-    Bank cash: {obs['bank_cash']}\n
+    Average bank cash: {np.mean(bank_cash_history)}\n
     Average test reward: {np.mean(test_rewards)}
     """)
 
-    test_results = {'bank_cash': obs['bank_cash'],
+    test_results = {'bank_cash': bank_cash_history,
                     'avg_test_reward': np.mean(test_rewards),
                     'test_rewards': test_rewards}
     
     return test_results
 
+
 #function to get baseline agent results
-def get_baseline_results(env, n_steps=1000):
+def get_baseline_results(env, n_steps=100, nr_runs=10):
     # Test the trained agent
-    obs = env.reset()
     baseline_rewards = []
     baseline_actions = []
-    for _ in range(n_steps):
-        # print('before:', obs)
-        action = env.action_space.sample()
-        # print('action:', action)
-        baseline_actions.append(action)
-        obs, rewards, done, info = env.step(action)
-        # print('after:', obs)
-        # print('reward:', rewards)
-        baseline_rewards.append(rewards)
-        if done:
-            obs = env.reset()
+    bank_cash_history = []
+    
+    for _ in range(nr_runs):
+        obs = env.reset()
+        for _ in range(n_steps):
+            # print('before:', obs)
+            action = env.action_space.sample()
+            # print('action:', action)
+            baseline_actions.append(action)
+            obs, rewards, done, info = env.step(action)
+            # print('after:', obs)
+            # print('reward:', rewards)
+            baseline_rewards.append(rewards)
+            if done:
+                bank_cash_history.append(float(obs['bank_cash']))
+                obs = env.reset()
+        bank_cash_history.append(float(obs['bank_cash']))
 
     print(f"""Baseline results:\n
-    Bank cash: {obs['bank_cash']}\n
+    Average bank cash: {np.mean(bank_cash_history)}\n
     Average baseline rewards: {np.mean(baseline_rewards)}""")
 
-    baseline_results = {'bank_cash': obs['bank_cash'],
+    baseline_results = {'bank_cash': bank_cash_history,
                         'avg_baseline_reward': np.mean(baseline_rewards),
                         'baseline_rewards': baseline_rewards}
     
@@ -207,22 +220,51 @@ def plot_results(actions_callback, model_name='ppo_lending', path='models/', rew
     else:
         plt.close(fig)
 
+def plot_reward_progress(agent, rewards, path, show_plot=True):
+    reward_fn = agent.reward_fn
+    fig = plt.figure()
+    if rewards == 'scalar':
+        plt.plot(reward_fn.history, label='Reward')
+    elif rewards == 'UCB':
+        plt.plot(reward_fn.value_history[0], label='Reward')
+        plt.plot(reward_fn.value_history[1], label='UCB')
+    elif rewards == 'visit_count':
+        plt.plot(reward_fn.value_history[0], label='Reward')
+        plt.plot(reward_fn.value_history[1], label='Visit count')
+    plt.title(f'Reward history with {rewards} rewards')
+    plt.xlabel('Timesteps')
+    plt.ylabel('Reward')
+    plt.legend()
+    plt.savefig(path+'reward_history.png')
+    if show_plot:
+        plt.show()
+    else:
+        plt.close(fig)
+
 #Function to run everything
 def run_all(env_params, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epochs=10, gamma=0.99, clip_range=0.2,
             seed=None, learning_steps=100000, model_name='ppo_lending', verbose=1,
-            path='models/', n_test_steps=1000, rewards='scalar', show_plot=True):
+            path='models/', n_test_steps=100, rewards='scalar', show_plot=True, train=True):
     
     path = path+rewards+'/'
     #Initialize environment
     env = init_env(env_params, rewards=rewards)
 
     #Train agent
-    print('Training agent...')
-    agent, actions_callback = train_agent(env, learning_rate=learning_rate, n_steps=n_steps, batch_size=batch_size,
-                                          n_epochs=n_epochs, gamma=gamma, clip_range=clip_range, seed=seed,
-                                          learning_steps=learning_steps, model_name=model_name, path=path, 
-                                          rewards=rewards, verbose=verbose)
-    print('Agent trained')
+    if train:
+        print('Training agent...')
+        agent, actions_callback = train_agent(env, learning_rate=learning_rate, n_steps=n_steps, batch_size=batch_size,
+                                            n_epochs=n_epochs, gamma=gamma, clip_range=clip_range, seed=seed,
+                                            learning_steps=learning_steps, model_name=model_name, path=path, 
+                                            rewards=rewards, verbose=verbose)
+        print('Agent trained')
+        plot_reward_progress(env, rewards, path, show_plot)
+
+    else:
+        #Load agent
+        print('Loading agent...')
+        agent = PPO.load(path+model_name+'_'+rewards, env=env)
+        print('Agent loaded')
 
     #Test agent
     print('Testing agent...')
@@ -245,7 +287,7 @@ def run_all(env_params, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epo
 if __name__ == '__main__':
     #Define environment parameters
     group_0_prob = 0.5
-    bank_starting_cash = np.float32(10000)
+    bank_starting_cash = np.float32(1000)
     interest_rate = 1.0
     cluster_shift_increment = 0.01
     cluster_probabilities = lending_params.DELAYED_IMPACT_CLUSTER_PROBS
@@ -262,22 +304,6 @@ if __name__ == '__main__':
     #Run everything
     run_all(env_params, learning_steps=1000, rewards='scalar', show_plot=True)
 
-# group_0_prob = 0.5
-# bank_starting_cash = np.float32(10000)
-# interest_rate = 1.0
-# cluster_shift_increment = 0.01
-# cluster_probabilities = lending_params.DELAYED_IMPACT_CLUSTER_PROBS
-
-# env_params = lending_params.DelayedImpactParams(
-#         applicant_distribution=lending_params.two_group_credit_clusters(
-#             cluster_probabilities= cluster_probabilities,
-#             group_likelihoods=[group_0_prob, 1 - group_0_prob]),
-#         bank_starting_cash=bank_starting_cash,
-#         interest_rate=interest_rate,
-#         cluster_shift_increment=cluster_shift_increment,
-#     )
-
-# run_all(env_params, learning_steps=1000, rewards='visit_count', show_plot=True)
 
 
 
