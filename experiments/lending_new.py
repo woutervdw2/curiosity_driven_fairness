@@ -28,7 +28,7 @@ import run_util
 from agents import classifier_agents
 from agents import oracle_lending_agent
 from agents import threshold_policies
-from agents import new_agent
+from agents import rl_agents
 from environments import lending
 from environments import lending_params
 from metrics import error_metrics
@@ -112,13 +112,13 @@ class Experiment(core.Params):
                 'bank_cash', baseline=env.initial_params.bank_starting_cash),
             observation_space=env.observation_space,
             params=agent_params)
-    elif self.agent.lower() == 'rl':
-       agent = new_agent.RlAgent(action_space=env.action_space,
+    else:
+       agent = rl_agents.RlAgent(action_space=env.action_space,
+                                 model_name=self.agent,
           reward_fn=rewards.ScalarDeltaReward(
           'bank_cash', baseline=env.initial_params.bank_starting_cash),
-          observation_space=env.observation_space
+          observation_space=env.observation_space,
           )
-       agent.load_model("ppo_lending/ppo_lending")
        print(agent.model)
 
     agent.seed(100)
@@ -176,6 +176,11 @@ class Experiment(core.Params):
         'experiment_params': self,
         'metric_results': metric_results,
     }
+    
+    with open(f'results/{self.agent}/report.json', 'w', encoding='utf-8') as f:
+        core.to_json(report, indent=4)
+
     if self.return_json:
-      return core.to_json(report, indent=4)
+        return core.to_json(report, indent=4)
+    
     return report

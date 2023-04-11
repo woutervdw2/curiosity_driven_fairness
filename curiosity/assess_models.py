@@ -1,5 +1,5 @@
 
-"""Main file to run lending experiments expanded with curiosity agents."""
+"""Main file to run lending experiments expanded with trained reinforcement learning agents."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -20,13 +20,14 @@ import numpy as np
 import simplejson as json
 
 #AGENTS OPTIONS:
-#Logistic, oracle
-AGENT_NAME = 'rl'
+#Logistic, oracle, UCB, scalar, visit_count
+AGENT_NAME = 'UCB'
+
 if not os.path.exists(f'lending_{AGENT_NAME}_plots'):
    os.mkdir(f'lending_{AGENT_NAME}_plots')
 
-flags.DEFINE_string('outfile', f'outfiles_{AGENT_NAME}.txt', 'Path to write out results.')
-flags.DEFINE_string('plots_directory', f'lending_{AGENT_NAME}_plots', 'Directory to write out plots.')
+flags.DEFINE_string('outfile', f'results/{AGENT_NAME}/results.txt', 'Path to write out results.')
+flags.DEFINE_string('plots_directory', f'results/{AGENT_NAME}/lending_plots', 'Directory to write out plots.')
 flags.DEFINE_bool('equalize_opportunity', False,
                   'If true, apply equality of opportunity constraints.')
 flags.DEFINE_integer('num_steps', 10000,
@@ -56,7 +57,7 @@ def main(argv):
       burnin=200,
       cluster_shift_increment=0.01,
       include_cumulative_loans=True,
-      return_json=False,
+      return_json=True,
       threshold_policy=(EQUALIZE_OPPORTUNITY if FLAGS.equalize_opportunity else
                         MAXIMIZE_REWARD),
       agent=AGENT_NAME).run()

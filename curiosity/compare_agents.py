@@ -104,10 +104,8 @@ PLOT_PATH = 'plots/'
 test_results_dict = {}
 
 for model in tqdm(MODELS_TO_TRAIN):
-    test_results, baseline_results, action_callback = run_all(env_params, learning_steps=LEARNING_STEPS, 
-                                                              rewards=model, show_plot=False, verbose=0,
-                                                              learning_rate=0.0001,
-                                                              n_steps=512, n_test_steps=1000)
+    test_results, baseline_results, action_callback = run_all(env_params, rewards=model, show_plot=False,
+                                                              n_test_steps=1000, train=False)
     test_results_dict[model] = test_results
     test_results_dict[model+'actions'] = action_callback
 

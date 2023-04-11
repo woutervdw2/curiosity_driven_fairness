@@ -77,7 +77,7 @@ with open(filename, 'a', newline='') as f:
         print('File does not exist, creating new file')
         writer.writeheader()
 
-    for i, params in tqdm(enumerate(param_combinations)):
+    for i, params in enumerate(tqdm(param_combinations)):
         lr, gamma, clip_range, n_steps = params
 
         if (lr, gamma, clip_range, n_steps, model) in existing_combinations:
