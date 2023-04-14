@@ -35,7 +35,7 @@ from metrics import error_metrics
 from metrics import lending_metrics
 from metrics import value_tracking_metrics
 
-
+import os
 
 
 MAXIMIZE_REWARD = threshold_policies.ThresholdPolicy.MAXIMIZE_REWARD
@@ -177,7 +177,10 @@ class Experiment(core.Params):
         'metric_results': metric_results,
     }
     
-    with open(f'results/{self.agent}/report.json', 'w', encoding='utf-8') as f:
+    if not os.path.exists(f'models/ppo_lending/{self.agent}'):
+        os.makedirs(f'models/ppo_lending/{self.agent}')
+
+    with open(f'models/ppo_lending/{self.agent}/report.json', 'w', encoding='utf-8') as f:
         core.to_json(report, indent=4)
 
     if self.return_json:

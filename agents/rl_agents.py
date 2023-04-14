@@ -28,16 +28,18 @@ class RlAgent(core.Agent):
         factory=lambda: gym.spaces.Discrete(2))
     rng = attr.ib(factory=np.random.RandomState)
     model = attr.ib(None)
+    model_kind = attr.ib("ppo_lending/")
     model_name = attr.ib("UCB")
-    model_kind = attr.ib("ppo_lending")
-    path = attr.ib("models/"+model_name+'/'+model_kind+'_'+model_name)
+
 
     #Check if model exists
     def __attrs_post_init__(self):
+        self.path = "models/"+self.model_kind+self.model_name+'/'+self.model_name
         try:
             self.load_model()
         except:
             print("Model not found, try different model name or kind")
+            exit()
 
     #function to load model from file
     def load_model(self):

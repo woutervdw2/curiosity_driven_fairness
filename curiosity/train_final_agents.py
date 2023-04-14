@@ -9,6 +9,8 @@ from environments import lending_max3x as lending
 
 from environments import lending_params
 
+from compare_agents import grouped_barplot
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,9 +18,6 @@ from tqdm import tqdm
 
 from rl_agent import run_all
 
-import itertools
-import csv
-import os
 
 
 """File that utilizes the parm testing file to train the final agents."""
@@ -39,25 +38,54 @@ env_params = lending_params.DelayedImpactParams(
         cluster_shift_increment=cluster_shift_increment,
     )
 
-MODELS_TO_TRAIN = ['visit_count', 'scalar', 'UCB']
+def choose_parms():
+    """Chooses the best parameters from the parm testing file."""
+    parm_csv = pd.read_csv('parms_test/results.csv')
+    parm_csv.columns = ['index', 'learning_rate', 'gamma', 'clip_range', 'n_steps', 'model', 'bank_cash']
 
-LEARNING_STEPS = 100000
+    #Choose best parameters
+    best_parm = parm_csv.loc[parm_csv['bank_cash'].idxmax()]
+    print(f"Best param config: {best_parm}")
+    best_parm = best_parm.drop('index')
+    best_parm = best_parm.drop('bank_cash')
+    best_parm = best_parm.drop('model')
+    best_parm = best_parm.to_dict()
+    return best_parm
+
+def final_training_agents(env_params, models, path='plots/', **kwargs):
+    """Trains the final agents with the best parameters."""
+    train_results_dict = {}
+    parm_dict = choose_parms()
+    if kwargs:
+        #add key and values from kwargs to parm_dict
+        parm_dict.update(kwargs['kwargs'])
+
+    for model in tqdm(models):
+        parm_dict['rewards'] = model
+        _, _, actions_callback = run_all(env_params, **parm_dict)
+        train_results_dict[model] = actions_callback
+    
+    grouped_actions = [[np.mean(train_results_dict[model].group0_actions), 
+        np.mean(train_results_dict[model].group1_actions)] for model in models]
 
 
-
-parm_csv = pd.read_csv('parms_test/results.csv')
-parm_csv.columns = ['index', 'learning_rate', 'gamma', 'clip_range', 'n_steps', 'model', 'bank_cash']
-
-#Choose best parameters
-best_parm = parm_csv.loc[parm_csv['bank_cash'].idxmax()]
-print(f"Best param config: {best_parm}")
-best_parm = best_parm.drop('index')
-best_parm = best_parm.drop('bank_cash')
-best_parm = best_parm.drop('model')
-best_parm = best_parm.to_dict()
+    grouped_barplot(grouped_actions, ['Group 0', 'Group 1'],
+                        'Mean positive actions per group and model', 'Model',
+                        'Mean positive actions', models, PLOT_PATH=path)
 
 
-#Train final agents
-for model in tqdm(MODELS_TO_TRAIN):
-    best_parm['rewards'] = model
-    run_all(env_params, learning_steps=LEARNING_STEPS, show_plot=False, **best_parm)
+if __name__ == '__main__':
+    LEARNING_STEPS = 50000
+
+    parm_csv = pd.read_csv('parms_test/results.csv')
+    parm_csv.columns = ['index', 'learning_rate', 'gamma', 'clip_range', 'n_steps', 'model', 'bank_cash']
+
+    #Choose best parameters
+    best_parm = parm_csv.loc[parm_csv['bank_cash'].idxmax()]
+    print(f"Best param config: {best_parm}")
+    best_parm = best_parm.drop('index')
+    best_parm = best_parm.drop('bank_cash')
+    best_parm = best_parm.drop('model')
+    best_parm = best_parm.to_dict()
+                
+    final_training_agents(learning_steps=LEARNING_STEPS, show_plot=False, **best_parm)

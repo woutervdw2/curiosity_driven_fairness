@@ -90,9 +90,8 @@ def init_env(env_params, rewards='scalar'):
     return env
 
 #function to train the agent
-def train_agent(env, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epochs=10, gamma=0.99, clip_range=0.2,
-                seed=None, learning_steps=100000, model_name='ppo_lending',
-                  path='models/', rewards='scalar', verbose=1):
+def train_agent(env, path, reward='scalar', learning_rate=0.0003, n_steps=2048, batch_size=64, n_epochs=10, gamma=0.99, clip_range=0.2,
+                seed=None, learning_steps=100000, verbose=1):
     
     #Create the agent
     agent = PPO('MultiInputPolicy', env, verbose=verbose, learning_rate=learning_rate,
@@ -108,7 +107,8 @@ def train_agent(env, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epochs
                 progress_bar=True, callback=actions_callback)
 
     # Save the agent
-    agent.save(path+model_name+'_'+rewards)
+
+    agent.save(path+reward)
 
     return agent, actions_callback
 
@@ -180,7 +180,7 @@ def get_baseline_results(env, n_steps=100, nr_runs=10):
     return baseline_results
 
 #function to plot the results
-def plot_results(actions_callback, model_name='ppo_lending', path='models/', rewards='scalar', show_plot=True):
+def plot_results(actions_callback, model_name='ppo_lending/', path='models/', rewards='scalar'):
     group0_actions = np.array(actions_callback.group0_actions)
     group1_actions = np.array(actions_callback.group1_actions)
 
@@ -189,22 +189,18 @@ def plot_results(actions_callback, model_name='ppo_lending', path='models/', rew
     fig = plt.figure()
     plt.bar(x=['group0', 'group1'], height=[np.mean(group0_actions), np.mean(group1_actions)])
     plt.title('Average positive actions per group with '+rewards+' rewards')
-    plt.savefig(path+model_name+rewards+'_average_positive_actions.png')
-    if show_plot:
-        plt.show()
-    else:
-        plt.close(fig)
+    plt.savefig(path+model_name+rewards+'/'+'_average_positive_actions.png')
+    plt.show()
+
 
     #Barplot of mean rewards per group
     fig = plt.figure()
     plt.bar(x=['group0', 'group1'], height=[np.mean(actions_callback.group0_rewards),
                                              np.mean(actions_callback.group1_rewards)])
     plt.title('Average rewards per group with '+rewards+' rewards')
-    plt.savefig(path+model_name+rewards+'_average_rewards.png')
-    if show_plot:
-        plt.show()
-    else:
-        plt.close(fig)
+    plt.savefig(path+model_name+rewards+'/'+'_average_rewards.png')
+    plt.show()
+
 
     #Show barplots side by side
     fig, (ax1, ax2) = plt.subplots(1, 2)
@@ -214,11 +210,9 @@ def plot_results(actions_callback, model_name='ppo_lending', path='models/', rew
     ax2.bar(x=['group0', 'group1'], height=[np.mean(actions_callback.group0_rewards),
                                                 np.mean(actions_callback.group1_rewards)])
     ax2.set_title('Average rewards with '+rewards+' rewards')
-    plt.savefig(path+model_name+rewards+'_average_positive_actions_rewards.png')
-    if show_plot:
-        plt.show()
-    else:
-        plt.close(fig)
+    plt.savefig(path+model_name+rewards+'/'+'_average_positive_actions_rewards.png')
+    plt.show()
+
 
 def plot_reward_progress(agent, rewards, path, show_plot=True):
     reward_fn = agent.reward_fn
@@ -236,34 +230,32 @@ def plot_reward_progress(agent, rewards, path, show_plot=True):
     plt.ylabel('Reward')
     plt.legend()
     plt.savefig(path+'reward_history.png')
-    if show_plot:
-        plt.show()
-    else:
-        plt.close(fig)
+    plt.show()
+
 
 #Function to run everything
 def run_all(env_params, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epochs=10, gamma=0.99, clip_range=0.2,
-            seed=None, learning_steps=100000, model_name='ppo_lending', verbose=1,
+            seed=None, learning_steps=100000, model_name='ppo_lending/', verbose=1,
             path='models/', n_test_steps=100, rewards='scalar', show_plot=True, train=True):
     
-    path = path+rewards+'/'
+    path = path+model_name+rewards+'/'
     #Initialize environment
     env = init_env(env_params, rewards=rewards)
 
     #Train agent
     if train:
         print('Training agent...')
-        agent, actions_callback = train_agent(env, learning_rate=learning_rate, n_steps=n_steps, batch_size=batch_size,
+        agent, actions_callback = train_agent(env, path, reward=rewards, learning_rate=learning_rate, n_steps=n_steps, batch_size=batch_size,
                                             n_epochs=n_epochs, gamma=gamma, clip_range=clip_range, seed=seed,
-                                            learning_steps=learning_steps, model_name=model_name, path=path, 
-                                            rewards=rewards, verbose=verbose)
+                                            learning_steps=learning_steps,
+                                            verbose=verbose)
         print('Agent trained')
         plot_reward_progress(env, rewards, path, show_plot)
 
     else:
         #Load agent
         print('Loading agent...')
-        agent = PPO.load(path+model_name+'_'+rewards, env=env)
+        agent = PPO.load(path+rewards, env=env)
         print('Agent loaded')
 
     #Test agent
@@ -277,12 +269,16 @@ def run_all(env_params, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epo
     print('Baseline results obtained')
 
     #Plot results
-    print('Plotting results...')
-    plot_results(actions_callback, model_name=model_name, path=path, rewards=rewards, show_plot=show_plot)
-    print('Results plotted')
+    if show_plot and train:
+        print('Plotting results...')
+        plot_results(actions_callback, model_name=model_name, path=path, rewards=rewards, show_plot=show_plot)
+        print('Results plotted')
 
-    return test_results, baseline_results, actions_callback
-
+    if train:
+        return test_results, baseline_results, actions_callback
+    else:
+        return test_results, baseline_results, None
+    
 
 if __name__ == '__main__':
     #Define environment parameters

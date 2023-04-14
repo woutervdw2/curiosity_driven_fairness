@@ -65,11 +65,6 @@ def run_simulation(env, agent, metrics, num_steps, seed=100, agent_seed=50):
     action = agent.act(observation, done)
     # TODO(): Remove reward from this loop.
     observation, _, done, _ = env.step(action)
-    if epoch%500 == 0:
-      print(f"""\n 
-      observation space: {agent.observation_space}\n
-            action_space: {agent.action_space}\n""")
-      print(f"new observation: {observation}")
     if done:
       break
 
