@@ -68,10 +68,13 @@ def final_training_agents(env_params, models, path='plots/', **kwargs):
     grouped_actions = [[np.mean(train_results_dict[model].group0_actions), 
         np.mean(train_results_dict[model].group1_actions)] for model in models]
 
+    PLOT_PATH = path
+    if 'model_name' in kwargs['kwargs']:
+        PLOT_PATH = 'plots/'+kwargs['kwargs']['model_name']+'/'  
 
     grouped_barplot(grouped_actions, ['Group 0', 'Group 1'],
                         'Mean positive actions per group and model', 'Model',
-                        'Mean positive actions', models, PLOT_PATH=path)
+                        'Mean positive actions', models, PLOT_PATH=PLOT_PATH)
 
 
 if __name__ == '__main__':

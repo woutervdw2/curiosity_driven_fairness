@@ -180,7 +180,7 @@ def get_baseline_results(env, n_steps=100, nr_runs=10):
     return baseline_results
 
 #function to plot the results
-def plot_results(actions_callback, model_name='ppo_lending/', path='models/', rewards='scalar'):
+def plot_results(actions_callback, path='models/', rewards='scalar', show_plot=True):
     group0_actions = np.array(actions_callback.group0_actions)
     group1_actions = np.array(actions_callback.group1_actions)
 
@@ -189,8 +189,11 @@ def plot_results(actions_callback, model_name='ppo_lending/', path='models/', re
     fig = plt.figure()
     plt.bar(x=['group0', 'group1'], height=[np.mean(group0_actions), np.mean(group1_actions)])
     plt.title('Average positive actions per group with '+rewards+' rewards')
-    plt.savefig(path+model_name+rewards+'/'+'_average_positive_actions.png')
-    plt.show()
+    plt.savefig(path + '_average_positive_actions.png')
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
 
 
     #Barplot of mean rewards per group
@@ -198,8 +201,11 @@ def plot_results(actions_callback, model_name='ppo_lending/', path='models/', re
     plt.bar(x=['group0', 'group1'], height=[np.mean(actions_callback.group0_rewards),
                                              np.mean(actions_callback.group1_rewards)])
     plt.title('Average rewards per group with '+rewards+' rewards')
-    plt.savefig(path+model_name+rewards+'/'+'_average_rewards.png')
-    plt.show()
+    plt.savefig(path+'/'+'_average_rewards.png')
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
 
 
     #Show barplots side by side
@@ -210,8 +216,11 @@ def plot_results(actions_callback, model_name='ppo_lending/', path='models/', re
     ax2.bar(x=['group0', 'group1'], height=[np.mean(actions_callback.group0_rewards),
                                                 np.mean(actions_callback.group1_rewards)])
     ax2.set_title('Average rewards with '+rewards+' rewards')
-    plt.savefig(path+model_name+rewards+'/'+'_average_positive_actions_rewards.png')
-    plt.show()
+    plt.savefig(path+'_average_positive_actions_rewards.png')
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
 
 
 def plot_reward_progress(agent, rewards, path, show_plot=True):
@@ -230,7 +239,10 @@ def plot_reward_progress(agent, rewards, path, show_plot=True):
     plt.ylabel('Reward')
     plt.legend()
     plt.savefig(path+'reward_history.png')
-    plt.show()
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
 
 
 #Function to run everything
@@ -269,9 +281,9 @@ def run_all(env_params, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epo
     print('Baseline results obtained')
 
     #Plot results
-    if show_plot and train:
+    if train:
         print('Plotting results...')
-        plot_results(actions_callback, model_name=model_name, path=path, rewards=rewards, show_plot=show_plot)
+        plot_results(actions_callback, path=path, rewards=rewards, show_plot=show_plot)
         print('Results plotted')
 
     if train:

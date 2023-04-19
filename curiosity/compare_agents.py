@@ -12,6 +12,7 @@ from environments import lending_params
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import os
 
 from rl_agent import run_all
 
@@ -28,6 +29,10 @@ def grouped_barplot(data, group_names, title, xlabel, ylabel, x_tick_labels=None
     x_tick_labels: list of strings, containing the labels for each column
     """
     
+    #Check path exists, else create path
+    if not os.path.exists(PLOT_PATH):
+        os.makedirs(PLOT_PATH)
+        
     # Set the bar width
     bar_width = 0.35
     
@@ -66,6 +71,11 @@ def create_boxplot(data, labels, title, x_label, y_label, PLOT_PATH='plots/'):
     """
     Creates boxplot using the provided data, labels, title, x_label and y_label.
     """
+
+    #Check path exists, else create path
+    if not os.path.exists(PLOT_PATH):
+        os.makedirs(PLOT_PATH)
+
     # Set the figure size
     plt.figure(figsize=(10, 6))
 
@@ -97,6 +107,13 @@ def compare_agents(env_params, models, **kwargs):
     """
 
     PLOT_PATH = 'plots/'
+    if 'model_name' in kwargs['kwargs']:
+        PLOT_PATH = 'plots/'+kwargs['kwargs']['model_name']+'/'   
+
+    #Check path exists, else create path
+    if not os.path.exists(PLOT_PATH):
+        os.makedirs(PLOT_PATH) 
+
     test_results_dict = {}
     for model in models:
         test_result, _, action_callback = run_all(env_params, rewards=model, **kwargs['kwargs'])

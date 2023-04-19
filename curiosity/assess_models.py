@@ -40,22 +40,23 @@ json.encoder.FLOAT_REPR = lambda o: repr(round(o, 3))
 MAXIMIZE_REWARD = threshold_policies.ThresholdPolicy.MAXIMIZE_REWARD
 EQUALIZE_OPPORTUNITY = threshold_policies.ThresholdPolicy.EQUALIZE_OPPORTUNITY
 
-def create_flags(reward='scalar'):
-  if not os.path.exists(f'models/ppo_lending/{reward}'):
-   os.mkdir(f'models/ppo_lending/{reward}')
+def create_flags(reward='scalar', model_name='ppo_lending'):
+  
+  if not os.path.exists(f'models/{model_name}{reward}'):
+   os.mkdir(f'models/{model_name}{reward}')
 
   """Create flags for the experiment."""
   flags.DEFINE_integer('num_steps', 10000, 'Number of steps to run the simulation.')
   flags.DEFINE_bool('equalize_opportunity', False, 'If true, apply equality of opportunity constraints.')
-  flags.DEFINE_string('plots_directory', f'models/ppo_lending/{reward}', 'Directory to write out plots.')
-  flags.DEFINE_string('outfile', f'models/ppo_lending/{reward}/outfile.txt', 'Path to write out results.')
+  flags.DEFINE_string('plots_directory', f'models/{model_name}{reward}', 'Directory to write out plots.')
+  flags.DEFINE_string('outfile', f'models/{model_name}{reward}/outfile.txt', 'Path to write out results.')
   FLAGS = flags.FLAGS
   FLAGS(sys.argv)
   return FLAGS
 
-def main(reward='scalar'):
+def main(reward='scalar', model_name='ppo_lending'):
     """Run the experiment."""
-    FLAGS = create_flags(reward)
+    FLAGS = create_flags(reward, model_name)
     np.random.seed(100)
     group_0_prob = 0.5
     result = lending.Experiment(
@@ -137,8 +138,8 @@ def main(reward='scalar'):
             for key, value in result['metric_results'].items():
                 f.write(f'{key}: {value} \n')
 
-
-    FLAGS.remove_flag_values(FLAGS.flag_values_dict()['outfile', 'plots_directory', 'num_steps', 'equalize_opportunity'])
+    # Remove flags so they don't interfere with other experiments.
+    FLAGS.remove_flag_values(['outfile', 'plots_directory', 'num_steps', 'equalize_opportunity'])
 
 if __name__ == '__main__':
   main(AGENT_NAME)
