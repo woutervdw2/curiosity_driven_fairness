@@ -64,6 +64,9 @@ class _CashUpdater(core.StateUpdater):
       return
     if state.will_default:
       state.bank_cash -= params.loan_amount
+
+      #Test for no negative reward for wrong decision
+      # state.bank_cash = state.bank_cash
     else:
       state.bank_cash += params.loan_amount * params.interest_rate
     
@@ -151,6 +154,8 @@ class BaseLendingEnv(core.FairnessEnv):
         'group': group_space
     }
 
+    self.max_hist = 500
+
     super(BaseLendingEnv, self).__init__(params)
     self._state_init()
 
@@ -171,7 +176,12 @@ class BaseLendingEnv(core.FairnessEnv):
 
   def _is_done(self):
     """Returns True if the bank cash is less than loan_amount."""
-    return bool((self.state.bank_cash < self.state.params.loan_amount) | (self.state.bank_cash > self.state.params.bank_starting_cash*3))
+    done = False
+
+    if bool((self.state.bank_cash < self.state.params.loan_amount) | (len(self.history) > self.max_hist)):
+      done = True
+      self.max_hist *= 1.1
+    return done
 
   def _step_impl(self, state, action):
     """Run one timestep of the environment's dynamics.

@@ -37,6 +37,8 @@ from metrics import value_tracking_metrics
 
 import os
 
+import numpy as np
+
 
 MAXIMIZE_REWARD = threshold_policies.ThresholdPolicy.MAXIMIZE_REWARD
 EQUALIZE_OPPORTUNITY = threshold_policies.ThresholdPolicy.EQUALIZE_OPPORTUNITY
@@ -152,6 +154,24 @@ class Experiment(core.Params):
                 stratify_fn=lambda x: str(x.state.group_id)),
         'profit rate':
             value_tracking_metrics.ValueChange(env, state_var='bank_cash'),
+        'accuracy':
+            error_metrics.AccuracyMetric(
+                env, 
+                numerator_fn=lambda x: ((not x.state.will_default)==x.action),
+                denominator_fn=None,
+                stratify_fn=lambda x: str(x.state.group_id)),
+        'recall_features':
+            error_metrics.RecallMetric(
+                env,
+                prediction_fn=lambda x: x.action,
+                ground_truth_fn=lambda x: not x.state.will_default,
+                stratify_fn=lambda x: str(x.state.group_id)+str(np.argmax(x.state.applicant_features))),
+        'precision_features':
+            error_metrics.PrecisionMetric(
+                env,
+                prediction_fn=lambda x: x.action,
+                ground_truth_fn=lambda x: not x.state.will_default,
+                stratify_fn=lambda x: str(x.state.group_id)+str(np.argmax(x.state.applicant_features))),
     }
 
     if self.include_cumulative_loans:

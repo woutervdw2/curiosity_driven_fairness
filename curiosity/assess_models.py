@@ -19,21 +19,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import simplejson as json
 
-#AGENTS OPTIONS:
-#Logistic, oracle, UCB, scalar, visit_count
-# AGENT_NAME = 'UCB'
-
-
-
-# flags.DEFINE_string('outfile', f'results/{AGENT_NAME}/results.txt', 'Path to write out results.')
-# flags.DEFINE_string('plots_directory', f'results/{AGENT_NAME}/lending_plots', 'Directory to write out plots.')
-# flags.DEFINE_bool('equalize_opportunity', False,
-#                   'If true, apply equality of opportunity constraints.')
-# flags.DEFINE_integer('num_steps', 10000,
-#                      'Number of steps to run the simulation.')
-
-# FLAGS = flags.FLAGS
-
 # Control float precision in json encoding.
 json.encoder.FLOAT_REPR = lambda o: repr(round(o, 3))
 
@@ -46,7 +31,7 @@ def create_flags(reward='scalar', model_name='ppo_lending'):
    os.mkdir(f'models/{model_name}{reward}')
 
   """Create flags for the experiment."""
-  flags.DEFINE_integer('num_steps', 10000, 'Number of steps to run the simulation.')
+  flags.DEFINE_integer('num_steps', 20000, 'Number of steps to run the simulation.')
   flags.DEFINE_bool('equalize_opportunity', False, 'If true, apply equality of opportunity constraints.')
   flags.DEFINE_string('plots_directory', f'models/{model_name}{reward}', 'Directory to write out plots.')
   flags.DEFINE_string('outfile', f'models/{model_name}{reward}/outfile.txt', 'Path to write out results.')
@@ -65,15 +50,15 @@ def main(reward='scalar', model_name='ppo_lending'):
         bank_starting_cash=np.float32(10000),
         seed=200,
         num_steps=FLAGS.num_steps,
-        burnin=200,
+        burnin=0,
         cluster_shift_increment=0.01,
         include_cumulative_loans=True,
         return_json=False,
         threshold_policy=(EQUALIZE_OPPORTUNITY if FLAGS.equalize_opportunity else
                         MAXIMIZE_REWARD),
-        agent=reward).run()
+        agent=model_name+reward+"/"+reward).run()
 
-    title = ('Eq. opportunity' if FLAGS.equalize_opportunity else 'Max reward')
+    title = (f"{reward}")
     metrics = result['metric_results']
 
     # Standalone figure of initial credit distribution

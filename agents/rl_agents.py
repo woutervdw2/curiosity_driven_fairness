@@ -34,8 +34,9 @@ class RlAgent(core.Agent):
 
     #Check if model exists
     def __attrs_post_init__(self):
-        self.path = "models/"+self.model_kind+self.model_name+'/'+self.model_name
+        self.path = "models/"+self.model_name
         try:
+            print(f"Model path: {self.path}")
             self.load_model()
         except:
             print("Model not found, try different model name or kind")

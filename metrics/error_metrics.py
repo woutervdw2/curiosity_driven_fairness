@@ -125,15 +125,14 @@ class AccuracyMetric(core.Metric):
     for step in history:
       correct_predictions = self.numerator_fn(step)
       stratification = self.stratify_fn(step)
-      predictions_to_keep = self.denominator_fn(step)
 
+      predictions_to_keep = self.denominator_fn(step)
       if not isinstance(stratification, collections.Sequence):
         stratification = [stratification]
       if not isinstance(correct_predictions, collections.Sequence):
         correct_predictions = [correct_predictions]
       if not isinstance(predictions_to_keep, collections.Sequence):
         predictions_to_keep = [predictions_to_keep] * len(correct_predictions)
-
       assert (
           len(correct_predictions) == len(predictions_to_keep) ==
           len(stratification)

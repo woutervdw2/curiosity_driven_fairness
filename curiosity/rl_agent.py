@@ -58,7 +58,7 @@ class SaveActionsCallback(BaseCallback):
 
 
 #function to initialize the environment
-def init_env(env_params, rewards='scalar'):
+def init_env(env_params, rewards='scalar', beta=1, c=1):
     env = lending.DelayedImpactEnv(env_params)
     if rewards == 'scalar':
         env.reward_fn = rewards_fn.ScalarDeltaReward(
@@ -72,12 +72,12 @@ def init_env(env_params, rewards='scalar'):
         env.reward_fn = rewards_fn.ScalarDeltaRewardWithUCB(
                     'bank_cash',
                     baseline=env.initial_params.bank_starting_cash,
-                    c=2.0)
+                    c=c)
     elif rewards == 'visit_count':
         env.reward_fn = rewards_fn.ScalarDeltaRewardVisitCounts(
                     'bank_cash',
                     baseline=env.initial_params.bank_starting_cash,
-                    beta=2.0)
+                    beta=beta)
     else:
         print('Reward function not recognized')
         sys.exit()
@@ -244,15 +244,51 @@ def plot_reward_progress(agent, rewards, path, show_plot=True):
     else:
         plt.close()
 
+def plot_cumulative_reward(agent, rewards, path, show_plot=True):
+    reward_fn = agent.reward_fn
+    fig = plt.figure()
+    if rewards == 'scalar':
+        plt.plot(np.cumsum(reward_fn.history), label='Reward')
+    elif rewards == 'UCB':
+        plt.plot(np.cumsum(reward_fn.value_history[0]), label='Reward')
+        plt.plot(np.cumsum(reward_fn.value_history[1]), label='UCB')
+    elif rewards == 'visit_count':
+        plt.plot(np.cumsum(reward_fn.value_history[0]), label='Reward')
+        plt.plot(np.cumsum(reward_fn.value_history[1]), label='Visit count')
+    plt.title(f'Cumulative reward history with {rewards} rewards')
+    plt.xlabel('Timesteps')
+    plt.ylabel('Reward')
+    plt.legend()
+    plt.savefig(path+'cumulative_reward_history.png')
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
+
+def plot_cumulative_actions_per_group(rewards, action_callback, path, show_plot=True):
+    fig = plt.figure()
+    plt.plot(np.cumsum(action_callback.group0_actions), label='Group 0')
+    plt.plot(np.cumsum(action_callback.group1_actions), label='Group 1')
+    plt.title('Cumulative actions per group with '+rewards+' rewards')
+    plt.xlabel('Timesteps')
+    plt.ylabel('Actions')
+    plt.legend()
+    plt.savefig(path+'cumulative_actions_per_group.png')
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
+
+
 
 #Function to run everything
-def run_all(env_params, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epochs=10, gamma=0.99, clip_range=0.2,
+def run_all(env_params, beta=1, c=1, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epochs=10, gamma=0.99, clip_range=0.2,
             seed=None, learning_steps=100000, model_name='ppo_lending/', verbose=1,
             path='models/', n_test_steps=100, rewards='scalar', show_plot=True, train=True):
     
     path = path+model_name+rewards+'/'
     #Initialize environment
-    env = init_env(env_params, rewards=rewards)
+    env = init_env(env_params, rewards=rewards, beta=beta, c=c)
 
     #Train agent
     if train:
@@ -263,7 +299,8 @@ def run_all(env_params, learning_rate=0.0003, n_steps=2048, batch_size=64, n_epo
                                             verbose=verbose)
         print('Agent trained')
         plot_reward_progress(env, rewards, path, show_plot)
-
+        plot_cumulative_reward(env, rewards, path, show_plot)
+        plot_cumulative_actions_per_group(rewards, actions_callback, path, show_plot)
     else:
         #Load agent
         print('Loading agent...')
