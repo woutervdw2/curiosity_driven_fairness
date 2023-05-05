@@ -180,7 +180,7 @@ class BaseLendingEnv(core.FairnessEnv):
 
     if bool((self.state.bank_cash < self.state.params.loan_amount) | (len(self.history) > self.max_hist)):
       done = True
-      self.max_hist *= 1.1
+      self.max_hist *= 1.03
     return done
 
   def _step_impl(self, state, action):

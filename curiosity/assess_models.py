@@ -27,14 +27,14 @@ EQUALIZE_OPPORTUNITY = threshold_policies.ThresholdPolicy.EQUALIZE_OPPORTUNITY
 
 def create_flags(reward='scalar', model_name='ppo_lending'):
   
-  if not os.path.exists(f'models/{model_name}{reward}_boosted'):
-   os.mkdir(f'models/{model_name}{reward}_boosted')
+  if not os.path.exists(f'models/{model_name}{reward}'):
+   os.mkdir(f'models/{model_name}{reward}')
 
   """Create flags for the experiment."""
   flags.DEFINE_integer('num_steps', 30000, 'Number of steps to run the simulation.')
   flags.DEFINE_bool('equalize_opportunity', False, 'If true, apply equality of opportunity constraints.')
-  flags.DEFINE_string('plots_directory', f'models/{model_name}{reward}_boosted', 'Directory to write out plots.')
-  flags.DEFINE_string('outfile', f'models/{model_name}{reward}_boosted/outfile.txt', 'Path to write out results.')
+  flags.DEFINE_string('plots_directory', f'models/{model_name}{reward}', 'Directory to write out plots.')
+  flags.DEFINE_string('outfile', f'models/{model_name}{reward}/outfile.txt', 'Path to write out results.')
   FLAGS = flags.FLAGS
   FLAGS(sys.argv)
   return FLAGS

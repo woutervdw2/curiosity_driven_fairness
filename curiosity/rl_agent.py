@@ -14,7 +14,9 @@ from gym import Env, spaces
 
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3 import PPO
-from stable_baselines3.common.callbacks import BaseCallback
+from stable_baselines3.common.callbacks import BaseCallback, EvalCallback, CallbackList
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common import results_plotter
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -57,10 +59,11 @@ class SaveActionsCallback(BaseCallback):
         return True
 
 
+
 #function to initialize the environment
-def init_env(env_params, rewards='scalar', beta=1, c=1):
+def init_env(env_params, rewards='scalar', beta=1, c=1, test=False):
     env = lending.DelayedImpactEnv(env_params)
-    if rewards == 'scalar':
+    if (rewards == 'scalar' or test):
         env.reward_fn = rewards_fn.ScalarDeltaReward(
                     'bank_cash', 
                     baseline=env.initial_params.bank_starting_cash)
@@ -91,23 +94,35 @@ def init_env(env_params, rewards='scalar', beta=1, c=1):
 
 #function to train the agent
 def train_agent(env, path, reward='scalar', learning_rate=0.0003, n_steps=2048, batch_size=64, n_epochs=10, gamma=0.99, clip_range=0.2,
-                seed=None, learning_steps=100000, verbose=1):
+                seed=None, learning_steps=100000, verbose=1, test_env=None):
     
     #Create the agent
     agent = PPO('MultiInputPolicy', env, verbose=verbose, learning_rate=learning_rate,
                  n_steps=n_steps, batch_size=batch_size, n_epochs=n_epochs, gamma=gamma,
                    clip_range=clip_range, seed=seed)
 
-    #Create the callback
+    #Create the callbackS
     #Output action and reward summary every 10% of the learning steps
     actions_callback = SaveActionsCallback(n_steps=np.round(learning_steps*0.1), verbose=verbose)
 
+    test_env = test_env
+    #Eval callback that tests the agent every 10% of the learning steps
+    eval_callback = EvalCallback(test_env, best_model_save_path=path+reward+'_best',
+                                    log_path=path+reward+'_logs', eval_freq=max(np.round(learning_steps*0.1), 100),
+                                    deterministic=True, render=False, verbose=1)  
+    
+    callback = CallbackList([actions_callback, eval_callback])
+
     # Train the agent
     agent.learn(total_timesteps=learning_steps,
-                progress_bar=True, callback=actions_callback)
+                progress_bar=True, callback=callback)
 
+    # Plot the results
+    results_plotter.plot_results([path], 10e6, results_plotter.X_TIMESTEPS,
+                                  "PPO Lending")
+    plt.savefig(path+reward+'_result_monitor.png')
+    plt.show()
     # Save the agent
-
     agent.save(path+reward)
 
     return agent, actions_callback
@@ -289,6 +304,8 @@ def run_all(env_params, beta=1, c=1, learning_rate=0.0003, n_steps=2048, batch_s
     path = path+model_name+rewards+'/'
     #Initialize environment
     env = init_env(env_params, rewards=rewards, beta=beta, c=c)
+    test_env = init_env(env_params, rewards=rewards, beta=beta, c=c, test=True)
+    test_env = Monitor(test_env, path, allow_early_resets=True)
 
     #Train agent
     if train:
@@ -296,7 +313,7 @@ def run_all(env_params, beta=1, c=1, learning_rate=0.0003, n_steps=2048, batch_s
         agent, actions_callback = train_agent(env, path, reward=rewards, learning_rate=learning_rate, n_steps=n_steps, batch_size=batch_size,
                                             n_epochs=n_epochs, gamma=gamma, clip_range=clip_range, seed=seed,
                                             learning_steps=learning_steps,
-                                            verbose=verbose)
+                                            verbose=verbose, test_env=test_env)
         print('Agent trained')
         plot_reward_progress(env, rewards, path, show_plot)
         plot_cumulative_reward(env, rewards, path, show_plot)
