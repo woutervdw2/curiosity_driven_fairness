@@ -56,7 +56,7 @@ def main(reward='scalar', model_name='ppo_lending'):
         return_json=False,
         threshold_policy=(EQUALIZE_OPPORTUNITY if FLAGS.equalize_opportunity else
                         MAXIMIZE_REWARD),
-        agent=model_name+reward+"/"+reward).run()
+        agent=model_name[:-8]+reward+"/"+reward+"_best/"+"best_model").run()
 
     title = (f"{reward}")
     metrics = result['metric_results']

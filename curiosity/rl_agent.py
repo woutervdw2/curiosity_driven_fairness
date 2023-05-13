@@ -2,7 +2,7 @@
 import sys
 sys.path.append('../ml-fairness-gym')
 
-
+import os
 #Lending environment without max bank cash
 # from environments import lending
 #Lending environment with max bank cash
@@ -17,6 +17,9 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback, EvalCallback, CallbackList
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common import results_plotter
+from stable_baselines3.common.logger import configure
+
+import pickle
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,6 +36,14 @@ class SaveActionsCallback(BaseCallback):
         self.group1_rewards = []
         self.n_steps = int(n_steps)
         self.verbose = verbose
+        self.batch_regret = []
+        self.regret = []
+
+        self.group1_regret = []
+        self.group0_regret = []
+        self.group1_batch_regret = []
+        self.group0_batch_regret = []
+
 
     def _on_step(self) -> bool:
         #Save the actions and rewards per group
@@ -46,7 +57,45 @@ class SaveActionsCallback(BaseCallback):
 
         if (self.num_timesteps % self.n_steps == 0) and self.verbose:
             self._training_summary()
+        
+        self.compute_regret()
+    
 
+    def _on_rollout_end(self) -> None:
+        self.regret.append(np.sum(self.batch_regret))
+        self.group0_regret.append(np.sum(self.group0_batch_regret))
+        self.group1_regret.append(np.sum(self.group1_batch_regret))
+
+        self.group1_batch_regret = []
+        self.group0_batch_regret = []
+        self.batch_regret = []
+        
+
+    def compute_regret(self):       
+        action = self.locals['actions'][0]
+        group = np.argmax(a=self.locals['obs_tensor']['group'][0].cpu(), axis=0)
+        applicant_features = np.argmax(a=self.locals['obs_tensor']['applicant_features'][0].cpu(), axis=0)
+        state = self.locals['env'].get_attr('state')[0]
+
+        P_will_default = state.params.applicant_distribution.components[group].components[applicant_features].will_default.p
+        P_paying_back = 1-P_will_default
+
+        #Compute optimal action
+        expected_rejected = 0
+        expected_accepted = -1*(P_will_default * state.params.loan_amount) + (P_paying_back * state.params.interest_rate)
+        best_action = max(expected_rejected, expected_accepted)
+        if action == 1:
+            regret = best_action - expected_accepted
+        else:
+            regret = best_action - expected_rejected
+        self.batch_regret.append(regret)
+        if group == 1:
+            self.group1_batch_regret.append(regret)
+        else:
+            self.group0_batch_regret.append(regret)
+
+
+   
     #Function that prints mean of actions and rewards per group in last 1000 steps
     def _training_summary(self) -> bool:
         group0_actions = np.array(self.group0_actions)
@@ -57,12 +106,16 @@ class SaveActionsCallback(BaseCallback):
         print('mean rewards:', np.mean(group0_rewards[-self.n_steps:]), np.mean(group1_rewards[-self.n_steps:]))
 
         return True
+    
 
 
 
 #function to initialize the environment
 def init_env(env_params, rewards='scalar', beta=1, c=1, test=False):
-    env = lending.DelayedImpactEnv(env_params)
+    if not test:
+        env = lending.DelayedImpactEnv(env_params)
+    else:
+        env = lending.DelayedImpactEnv(env_params, test=test)
     if (rewards == 'scalar' or test):
         env.reward_fn = rewards_fn.ScalarDeltaReward(
                     'bank_cash', 
@@ -96,10 +149,12 @@ def init_env(env_params, rewards='scalar', beta=1, c=1, test=False):
 def train_agent(env, path, reward='scalar', learning_rate=0.0003, n_steps=2048, batch_size=64, n_epochs=10, gamma=0.99, clip_range=0.2,
                 seed=None, learning_steps=100000, verbose=1, test_env=None):
     
+
     #Create the agent
-    agent = PPO('MultiInputPolicy', env, verbose=verbose, learning_rate=learning_rate,
+    agent = PPO('MultiInputPolicy', env, learning_rate=learning_rate,
                  n_steps=n_steps, batch_size=batch_size, n_epochs=n_epochs, gamma=gamma,
-                   clip_range=clip_range, seed=seed)
+                   clip_range=clip_range, verbose=1, seed=seed)
+
 
     #Create the callbackS
     #Output action and reward summary every 10% of the learning steps
@@ -125,6 +180,11 @@ def train_agent(env, path, reward='scalar', learning_rate=0.0003, n_steps=2048, 
     # Save the agent
     agent.save(path+reward)
 
+    #Save actions callback to pickle
+    with open(path+reward+'_actions_callback.pkl', 'wb') as f:
+        pickle.dump(actions_callback, f)
+
+        
     return agent, actions_callback
 
 # function to test the agent
@@ -294,6 +354,41 @@ def plot_cumulative_actions_per_group(rewards, action_callback, path, show_plot=
     else:
         plt.close()
 
+def plot_regret(rewards, action_callback, path, show_plot=True):
+    fig = plt.figure()
+    plt.plot(action_callback.regret, label='Regret')
+    plt.title('Regret over time for '+rewards+' model')
+    plt.xlabel('Timesteps')
+    plt.ylabel('Regret')
+    #Set x tick labels such that every label for the list is 256 timesteps apart
+    nr_ticks = int(np.round(len(action_callback.regret)/7))
+    plt.xticks(ticks=np.arange(0, len(action_callback.regret), nr_ticks), labels=np.arange(256, (256*len(action_callback.regret)+1), nr_ticks*256))
+
+    plt.legend()
+    plt.savefig(path+'regret.png')
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
+
+def plot_regret_per_group(rewards, action_callback, path, show_plot=True):
+    fig = plt.figure()
+    plt.plot(action_callback.group0_regret, label='Group 0')
+    plt.plot(action_callback.group1_regret, label='Group 1')
+    plt.title('Regret per group over time for '+rewards+' model')
+    plt.xlabel('Timesteps')
+    plt.ylabel('Regret')
+    nr_ticks = int(np.round(len(action_callback.group0_regret)/7))
+    plt.xticks(ticks=np.arange(0, len(action_callback.group0_regret), nr_ticks), labels=np.arange(256, (256*len(action_callback.group0_regret)+1), nr_ticks*256))
+
+
+    plt.legend()
+    plt.savefig(path+'regret_per_group.png')
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
+
 
 
 #Function to run everything
@@ -302,13 +397,15 @@ def run_all(env_params, beta=1, c=1, learning_rate=0.0003, n_steps=2048, batch_s
             path='models/', n_test_steps=100, rewards='scalar', show_plot=True, train=True):
     
     path = path+model_name+rewards+'/'
+    os.makedirs(path, exist_ok=True)
     #Initialize environment
     env = init_env(env_params, rewards=rewards, beta=beta, c=c)
-    test_env = init_env(env_params, rewards=rewards, beta=beta, c=c, test=True)
-    test_env = Monitor(test_env, path, allow_early_resets=True)
+
 
     #Train agent
     if train:
+        test_env = init_env(env_params, rewards=rewards, beta=beta, c=c, test=True)
+        test_env = Monitor(test_env, path, allow_early_resets=True)
         print('Training agent...')
         agent, actions_callback = train_agent(env, path, reward=rewards, learning_rate=learning_rate, n_steps=n_steps, batch_size=batch_size,
                                             n_epochs=n_epochs, gamma=gamma, clip_range=clip_range, seed=seed,
@@ -318,6 +415,8 @@ def run_all(env_params, beta=1, c=1, learning_rate=0.0003, n_steps=2048, batch_s
         plot_reward_progress(env, rewards, path, show_plot)
         plot_cumulative_reward(env, rewards, path, show_plot)
         plot_cumulative_actions_per_group(rewards, actions_callback, path, show_plot)
+        plot_regret(rewards, actions_callback, path, show_plot)
+        plot_regret_per_group(rewards, actions_callback, path, show_plot)
     else:
         #Load agent
         print('Loading agent...')

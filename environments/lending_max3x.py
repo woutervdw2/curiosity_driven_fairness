@@ -127,7 +127,7 @@ class BaseLendingEnv(core.FairnessEnv):
   _parameter_updater = core.NoUpdate()
   _applicant_updater = _ApplicantSampler()
 
-  def __init__(self, params = None):
+  def __init__(self, params = None, test = False):
     params = (
         self.default_param_builder() if params is None else params
         )  # type: lending_params.Params
@@ -154,6 +154,7 @@ class BaseLendingEnv(core.FairnessEnv):
         'group': group_space
     }
 
+    self.test = test
     self.max_hist = 500
 
     super(BaseLendingEnv, self).__init__(params)
@@ -178,9 +179,13 @@ class BaseLendingEnv(core.FairnessEnv):
     """Returns True if the bank cash is less than loan_amount."""
     done = False
 
-    if bool((self.state.bank_cash < self.state.params.loan_amount) | (len(self.history) > self.max_hist)):
-      done = True
-      self.max_hist *= 1.03
+    if not self.test:
+      if bool((self.state.bank_cash < self.state.params.loan_amount) | (len(self.history) > self.max_hist)):
+        done = True
+        self.max_hist *= 1.03
+    else: 
+      if bool((len(self.history) > 1500)):
+        done = True
     return done
 
   def _step_impl(self, state, action):
@@ -378,8 +383,8 @@ class DelayedImpactEnv(BaseLendingEnv):
   default_param_builder = lending_params.DelayedImpactParams
   _parameter_updater = _CreditShift()
 
-  def __init__(self, params=None):
-    super(DelayedImpactEnv, self).__init__(params)
+  def __init__(self, params=None, test=False):
+    super(DelayedImpactEnv, self).__init__(params, test)
     self.observable_state_vars['applicant_features'] = multinomial.Multinomial(
         self.initial_params.applicant_distribution.dim, 1)
     self.observation_space = spaces.Dict(self.observable_state_vars)
