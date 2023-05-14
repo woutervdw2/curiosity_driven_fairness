@@ -107,6 +107,17 @@ class SaveActionsCallback(BaseCallback):
 
         return True
     
+    def __getstate__(self):
+        """Return class attributes to be pickled."""
+        state = self.__dict__.copy()
+        del state["training_env"]
+        del state["locals"]
+        del state["globals"]
+        del state["parent"]
+        del state["model"]
+        del state["logger"]
+        return state
+    
 
 
 
@@ -138,11 +149,14 @@ def init_env(env_params, rewards='scalar', beta=1, c=1, test=False):
         print('Reward function not recognized')
         sys.exit()
     
+    env.reset()
+    
     print('Test environment')
     #Check environment is working
     check_env(env, warn=True)
     print('Environment is working')
 
+    env.reset()
     return env
 
 #function to train the agent
