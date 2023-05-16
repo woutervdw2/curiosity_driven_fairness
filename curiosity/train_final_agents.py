@@ -41,9 +41,7 @@ def choose_parms(absolute=False):
         best_parm = {}
         for parm in parm_list:
             best = parm_csv.groupby(parm).mean().sort_values(by='bank_cash', ascending=False).index[0]
-
             best_parm[parm] = best
-        
     print(f"Best param config: {best_parm}")
     return best_parm
   

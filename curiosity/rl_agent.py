@@ -167,7 +167,7 @@ def train_agent(env, path, reward='scalar', learning_rate=0.0003, n_steps=2048, 
     #Create the agent
     agent = PPO('MultiInputPolicy', env, learning_rate=learning_rate,
                  n_steps=n_steps, batch_size=batch_size, n_epochs=n_epochs, gamma=gamma,
-                   clip_range=clip_range, verbose=1, seed=seed)
+                   clip_range=clip_range, verbose=verbose, seed=seed)
 
 
     #Create the callbackS

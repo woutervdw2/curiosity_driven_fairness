@@ -208,7 +208,7 @@ BOOSTED_DELAYED_IMPACT_SUCCESS_PROBS = (0.2, 0.3, 0.55, 0.6, 0.65, 0.7, 0.7)
 def two_group_credit_clusters(
     group_likelihoods=(0.5, 0.5),
     cluster_probabilities=DELAYED_IMPACT_CLUSTER_PROBS,
-    success_probabilities=DELAYED_IMPACT_SUCCESS_PROBS):
+    success_probabilities= BOOSTED_DELAYED_IMPACT_SUCCESS_PROBS):
   """Returns a mixture of two credit cluster distributions.
 
   Args:
