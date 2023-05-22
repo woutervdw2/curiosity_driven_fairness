@@ -163,33 +163,35 @@ def plot_profit_rate(dictionary, title, x_label, y_label):
     plt.show()
 
 #Define subsets of dictionaries
-final_300_UCB = find_subset(values, ['final', '300000', 'UCB'], ['boosted'])
-final_300_visit = find_subset(values, ['final', '300000', 'visit_count'], ['boosted'])
-final_300_scalar = find_subset(values, ['final', '300000', 'scalar'], ['boosted'])
+final_300_UCB = find_subset(values, ['final', '400000', 'UCB'], ['boosted'])
+final_300_visit = find_subset(values, ['final', '400000', 'visit_count'], ['boosted'])
+final_300_scalar = find_subset(values, ['final', '400000', 'scalar'], ['boosted'])
 
-final_300_models_2 = find_subset(values, ['final', '300000', '_2_'], ['boosted'])
-final_200_models_2 = find_subset(values, ['final', '200000', '_2_'], ['boosted'])
-final_100_models_2 = find_subset(values, ['final', '100000', '_2_'], ['boosted'])
+final_400_models_15 = find_subset(values, ['final', '400000', '_1.5_'], ['boosted'])
+final_400_models_05 = find_subset(values, ['final', '400000', '_0.5_'], ['boosted'])
+final_400_models_3 = find_subset(values, ['final', '100000', '_3_'], ['boosted'])
 
-final_300_models_1 = find_subset(values, ['final', '300000', '_1_'], ['boosted'])
-final_200_models_1 = find_subset(values, ['final', '200000', '_1_'], ['boosted'])
-final_100_models_1 = find_subset(values, ['final', '100000', '_1_'], ['boosted'])
+# final_300_models_1 = find_subset(values, ['final', '300000', '_1_'], ['boosted'])
+# final_200_models_1 = find_subset(values, ['final', '200000', '_1_'], ['boosted'])
+# final_100_models_1 = find_subset(values, ['final', '100000', '_1_'], ['boosted'])
 
-final_300_models_01 = find_subset(values, ['final', '300000', '_0.1_'], ['boosted'])
-final_200_models_01 = find_subset(values, ['final', '200000', '_0.1_'], ['boosted'])
-final_100_models_01 = find_subset(values, ['final', '100000', '_0.1_'], ['boosted'])
+# final_300_models_01 = find_subset(values, ['final', '300000', '_0.1_'], ['boosted'])
+# final_200_models_01 = find_subset(values, ['final', '200000', '_0.1_'], ['boosted'])
+# final_100_models_01 = find_subset(values, ['final', '100000', '_0.1_'], ['boosted'])
 
 
 #Plot profit rate comparisons for 300000 steps
 
-# plot_profit_rate(final_300_UCB, 'Profit Rate for final UCB models with 300000 steps',
-#                   'Curiosity', 'Profit Rate')
-# plot_profit_rate(final_300_visit, 'Profit Rate for final visit count models with 300000 steps',
-#                   'Curiosity', 'Profit Rate')
-# plot_profit_rate(final_300_scalar, 'Profit Rate for final scalar models with 300000 steps',
-#                     'Curiosity', 'Profit Rate') 
-# plot_profit_rate(final_300_models, 'Profit Rate for final models with 300000 steps',
-#                   'Model name', 'Profit Rate')
+plot_profit_rate(final_300_UCB, 'Profit Rate for final UCB models with 400000 steps',
+                  'Curiosity', 'Profit Rate')
+plot_profit_rate(final_300_visit, 'Profit Rate for final visit count models with 400000 steps',
+                  'Curiosity', 'Profit Rate')
+plot_profit_rate(final_300_scalar, 'Profit Rate for final scalar models with 400000 steps',
+                    'Curiosity', 'Profit Rate') 
+plot_profit_rate(final_400_models_05, 'Profit Rate for final models with 300000 steps',
+                  'Model name', 'Profit Rate')
+plot_profit_rate(final_400_models_3, 'Profit Rate for final models with 300000 steps',
+                  'Model name', 'Profit Rate')
 # plot_profit_rate(final_200_models, 'Profit Rate for final models with 200000 steps',
 #                     'Model name', 'Profit Rate')
 # plot_profit_rate(final_100_models, 'Profit Rate for final models with 100000 steps',
@@ -237,12 +239,12 @@ def plot_final_credit_dist(dictionary, title, x_label, y_label):
 
 #Plot final credit distributions
 
-# plot_final_credit_dist(final_300_UCB, 'Final credit distribution for final UCB models with 300000 steps', 
-#                        x_label='curiosity', y_label='Credit distribution'),
-# plot_final_credit_dist(final_300_visit, 'Final credit distribution for final visit count models with 300000 steps',
-#                           x_label='curiosity', y_label='Credit distribution')
-# plot_final_credit_dist(final_300_scalar, 'Final credit distribution for final scalar models with 300000 steps',
-#                             x_label='curiosity', y_label='Credit distribution')
+plot_final_credit_dist(final_300_UCB, 'Final credit distribution for final UCB models with 400000 steps', 
+                       x_label='curiosity', y_label='Credit distribution'),
+plot_final_credit_dist(final_300_visit, 'Final credit distribution for final visit count models with 400000 steps',
+                          x_label='curiosity', y_label='Credit distribution')
+plot_final_credit_dist(final_300_scalar, 'Final credit distribution for final scalar models with 400000 steps',
+                            x_label='curiosity', y_label='Credit distribution')
 
 
 # plot_final_credit_dist(final_300_models_2, 'Final credit distribution for final models with 300000 steps and curiosity 2',
@@ -267,18 +269,18 @@ def plot_final_credit_dist(dictionary, title, x_label, y_label):
 #                             x_label='model', y_label='Credit distribution')
 
 
-boosted_UCB_300_2 = find_subset(values, ['UCB', '300000', '_2_', 'final'], [])
-boosted_visit_300_2 = find_subset(values, ['visit', '300000', '_2_', 'final'], [])
-boosted_scalar_300_2 = find_subset(values, ['scalar', '300000', '_2_', 'final'], [])
+boosted_UCB_300_2 = find_subset(values, ['UCB', '400000', '_3_', 'final'], [])
+boosted_visit_300_2 = find_subset(values, ['visit', '400000', '_3_', 'final'], [])
+boosted_scalar_300_2 = find_subset(values, ['scalar', '400000', '_3_', 'final'], [])
 
 #Sort above dicts on key reversed alphabetically
 boosted_UCB_300_2 = dict(sorted(boosted_UCB_300_2.items(), key=lambda item: item[0]))
 boosted_visit_300_2 = dict(sorted(boosted_visit_300_2.items(), key=lambda item: item[0]))
 boosted_scalar_300_2 = dict(sorted(boosted_scalar_300_2.items(), key=lambda item: item[0]))
 
-plot_final_credit_dist(boosted_UCB_300_2, 'Final boosted credit distribution for UCB models with 300000 steps and curiosity 2',
+plot_final_credit_dist(boosted_UCB_300_2, 'Final boosted credit distribution for UCB models with 400000 steps and curiosity 3',
                             x_label='boosted', y_label='Credit distribution')
-plot_final_credit_dist(boosted_visit_300_2, 'Final boosted credit distribution for visit count models with 300000 steps and curiosity 2',
+plot_final_credit_dist(boosted_visit_300_2, 'Final boosted credit distribution for visit count models with 400000 steps and curiosity 3',
                             x_label='boosted', y_label='Credit distribution')
-plot_final_credit_dist(boosted_scalar_300_2, 'Final boosted credit distribution for scalar models with 300000 steps and curiosity 2',
+plot_final_credit_dist(boosted_scalar_300_2, 'Final boosted credit distribution for scalar models with 400000 steps and curiosity 3',
                             x_label='boosted', y_label='Credit distribution')
