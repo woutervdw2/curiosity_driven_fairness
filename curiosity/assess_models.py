@@ -33,8 +33,8 @@ def create_flags(reward='scalar', model_name='ppo_lending'):
   """Create flags for the experiment."""
   flags.DEFINE_integer('num_steps', 20000, 'Number of steps to run the simulation.')
   flags.DEFINE_bool('equalize_opportunity', False, 'If true, apply equality of opportunity constraints.')
-  flags.DEFINE_string('plots_directory', f'models/{model_name}{reward}/', 'Directory to write out plots.')
-  flags.DEFINE_string('outfile', f'models/{model_name}{reward}/outfile.txt', 'Path to write out results.')
+  flags.DEFINE_string('plots_directory', f'models/{model_name}{reward}/{reward}_best/', 'Directory to write out plots.')
+  flags.DEFINE_string('outfile', f'models/{model_name}{reward}/{reward}_best/outfile.txt', 'Path to write out results.')
   FLAGS = flags.FLAGS
   FLAGS(sys.argv)
   return FLAGS
@@ -47,7 +47,7 @@ def main(reward='scalar', model_name='ppo_lending'):
     result = lending.Experiment(
         group_0_prob=group_0_prob,
         interest_rate=1.0,
-        bank_starting_cash=np.float32(10000),
+        bank_starting_cash=np.float32(100),
         seed=200,
         num_steps=FLAGS.num_steps,
         burnin=0,
@@ -56,13 +56,10 @@ def main(reward='scalar', model_name='ppo_lending'):
         return_json=False,
         threshold_policy=(EQUALIZE_OPPORTUNITY if FLAGS.equalize_opportunity else
                         MAXIMIZE_REWARD),
-        agent=model_name[:-8]+reward+"/"+reward+"_best/"+"best_model").run()
+        agent=model_name+reward+"/"+reward+"_best/"+"best_model").run()
 
     title = (f"{reward}")
     metrics = result['metric_results']
-    print(result["environment"]["history"][0])
-    print(result["environment"]["history"][0].state.applicant_features)
-    print(result["environment"]["history"][0].action)
     #Write results to file
     with open(f'models/{model_name}{reward}/results.txt', 'w') as f:
        f.write(f"""{[n.state.applicant_features for n in result["environment"]["history"]]} \n

@@ -61,6 +61,7 @@ class _CashUpdater(core.StateUpdater):
   def update(self, state, action):
     params = state.params
     if action == LoanDecision.REJECT:
+      state.bank_cash -= 0.1*params.loan_amount
       return
     if state.will_default:
       state.bank_cash -= params.loan_amount

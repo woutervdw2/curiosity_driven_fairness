@@ -17,6 +17,8 @@ import tensorflow as tf
 
 
 from stable_baselines3 import PPO
+from stable_baselines3.common.policies import obs_as_tensor
+import torch
 
 @attr.s
 class RlAgent(core.Agent):
@@ -38,6 +40,8 @@ class RlAgent(core.Agent):
         try:
             print(f"Model path: {self.path}")
             self.load_model()
+            self.model.set_parameters(load_path_or_dict=(self.path+".zip"))
+            print("Model loaded")
         except:
             print("Model not found, try different model name or kind")
             exit()
@@ -48,7 +52,25 @@ class RlAgent(core.Agent):
 
     def _act_impl(self, observation, reward, done):
         """Returns an action based on the observation."""
-        action, _ = self.model.predict(observation)
+        action, _ = self.model.predict(observation, deterministic=True)
         return action
-
+    
+    def predict_proba(self, obs):
+        obs = self.transform_dict_values(obs)
+        # obs = obs_as_tensor(obs, self.model.policy.device)
+        dis = self.model.policy.get_distribution(obs)
+        probs = dis.distribution.probs
+        probs_np = probs.detach().cpu().numpy()
+        return probs_np
+    
+    def transform_dict_values(self, dictionary):
+        transformed_dict = {}
+        for key, value in dictionary.items():
+            if isinstance(value, np.ndarray):
+                transformed_dict[key] = torch.as_tensor(value, device='cuda').reshape(1, -1)
+            elif isinstance(value, dict):
+                transformed_dict[key] = self.transform_dict_values(value)
+            else:
+                transformed_dict[key] = value
+        return transformed_dict
 

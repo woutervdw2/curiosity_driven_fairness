@@ -43,7 +43,8 @@ class SaveActionsCallback(BaseCallback):
         self.group0_regret = []
         self.group1_batch_regret = []
         self.group0_batch_regret = []
-
+    
+        
 
     def _on_step(self) -> bool:
         #Save the actions and rewards per group
@@ -211,7 +212,7 @@ def test_agent(agent, env, n_steps=100, nr_runs=10):
         obs = env.reset()
         for _ in     range(n_steps):
             # print('before:', obs)
-            action, __ = agent.predict(obs)
+            action, __ = agent.predict(obs, deterministic=True)
             # print('action:', action)
             test_actions.append(action)
             obs, rewards, done, info = env.step(action)
@@ -434,7 +435,7 @@ def run_all(env_params, beta=1, c=1, learning_rate=0.0003, n_steps=2048, batch_s
     else:
         #Load agent
         print('Loading agent...')
-        agent = PPO.load(path+rewards, env=env)
+        agent = PPO.load(path+rewards+"_best/best_model", env=env)
         print('Agent loaded')
 
     #Test agent

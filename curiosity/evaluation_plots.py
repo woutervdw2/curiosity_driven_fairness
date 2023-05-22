@@ -15,6 +15,19 @@ def search_files(directory, search_string, extension):
             if search_string in dir_name:
                 dir_path = os.path.join(root, dir_name)
 
+                #Find string after final in dir_name
+                if "boosted" in dir_name:
+                    index = dir_name.find("boosted")
+                else:
+                    index = dir_name.find("final")
+                    lentgh = len("final")
+                    if index == -1:
+                        pass
+                    else:
+                        reward = dir_name[index + lentgh:].strip()+"_best"
+                    
+                    dir_path = os.path.join(dir_path, reward)
+
                 
                 for file_name in os.listdir(dir_path):
                     if file_name.endswith(extension):
