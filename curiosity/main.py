@@ -24,15 +24,11 @@ from tqdm import tqdm
 def main():
     #Constants
     LEARNING_STEPS = [1000000]
-    MODELS = ['visit_count', 'UCB', 'scalar']
-    curiosity = [1.5, 3]
+    MODELS = ['UCB', 'visit_count', 'scalar']
+    curiosity = [0.5, 1.5, 3]
     for c in curiosity:
-        if c == 1.5:
-            MODELS = ['UCB', 'scalar']
-        else:
-            MODELS = ['visit_count', 'UCB', 'scalar']
         for n_steps in LEARNING_STEPS:
-            model_name = f'ppo_lending/{n_steps}_{c}_realfinal'
+            model_name = f'ppo_lending/{n_steps}_{c}'
             # Initialize environment
             group_0_prob = 0.5
             bank_starting_cash = np.float32(100)
@@ -49,7 +45,7 @@ def main():
                     cluster_shift_increment=cluster_shift_increment
                 )
             
-            # # # run_all arguments
+            # # # # run_all arguments
             train_args = {
                 'verbose': 0,
                 'learning_steps': n_steps,
@@ -73,7 +69,7 @@ def main():
                 'show_plot': False,
                 'model_name': model_name
             }
-            MODELS = ['visit_count', 'UCB', 'scalar']
+
             # #While comparing print terminal output colored blue
             sys.stdout.write("\033[1;34m")
             print("Comparing agents on test environments"+'-'*100)

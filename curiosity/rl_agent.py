@@ -43,18 +43,24 @@ class SaveActionsCallback(BaseCallback):
         self.group0_regret = []
         self.group1_batch_regret = []
         self.group0_batch_regret = []
+
+        self.group0_default = []
+        self.group1_default = []
     
         
 
     def _on_step(self) -> bool:
         #Save the actions and rewards per group
+        state = self.locals['env'].get_attr('state')[0]
         group = np.argmax(a=self.locals['obs_tensor']['group'][0].cpu(), axis=0)
         if group == 0:
             self.group0_actions.append(self.locals['actions'])
             self.group0_rewards.append(self.locals['rewards'])
+            self.group0_default.append(state.will_default)
         else:
             self.group1_actions.append(self.locals['actions'])
             self.group1_rewards.append(self.locals['rewards'])
+            self.group1_default.append(state.will_default)
 
         if (self.num_timesteps % self.n_steps == 0) and self.verbose:
             self._training_summary()
@@ -77,7 +83,6 @@ class SaveActionsCallback(BaseCallback):
         group = np.argmax(a=self.locals['obs_tensor']['group'][0].cpu(), axis=0)
         applicant_features = np.argmax(a=self.locals['obs_tensor']['applicant_features'][0].cpu(), axis=0)
         state = self.locals['env'].get_attr('state')[0]
-
         P_will_default = state.params.applicant_distribution.components[group].components[applicant_features].will_default.p
         P_paying_back = 1-P_will_default
 

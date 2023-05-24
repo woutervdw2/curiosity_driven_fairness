@@ -81,7 +81,7 @@ class ScalarDeltaReward(core.RewardFn):
     return retval
   
   def __reset__(self):
-    self.last_val = self.baseline
+    self.last_val = float(self.baseline)
 
 class ScalarDeltaRewardWithUCB(core.RewardFn):
   def __init__(self, dict_key, baseline=0, c=1.0):

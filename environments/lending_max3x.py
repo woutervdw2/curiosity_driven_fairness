@@ -185,7 +185,7 @@ class BaseLendingEnv(core.FairnessEnv):
         done = True
         self.max_hist *= 1.03
     else: 
-      if bool((len(self.history) > 1500)):
+      if bool((self.state.bank_cash < self.state.params.loan_amount) | (len(self.history) > 1500)):
         done = True
     return done
 

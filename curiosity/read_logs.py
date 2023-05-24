@@ -3,14 +3,14 @@ import pickle
 import matplotlib.pyplot as plt
 import os
 
-rewards = ["scalar", "UCB", "visit_count"]
+rewards = ["UCB"]
 curiosity = [0.5, 1.5, 3]
 
 #Function that loads the pickle files into a dictionary with reward+curiosity as key
 def load_pickle_files(r, c):
     ""
     dict = {}
-    with open(f"models/ppo_lending/400000_{c}_realfinal{r}/{r}_actions_callback.pkl", "rb") as f:
+    with open(f"models/ppo_lending/1000000_{c}{r}/{r}_actions_callback.pkl", "rb") as f:
         dict[f"{r}_{c}"] = pickle.load(f).__dict__
 
     return dict
@@ -25,19 +25,20 @@ def sliding_average(lst, window_size):
 def compute_precision_over_time(reward, curiosity, group):
     dict = load_pickle_files(reward, curiosity)
     actions = dict[f"{reward}_{curiosity}"][f'group{group}_actions']
-    rewards = dict[f"{reward}_{curiosity}"][f'group{group}_rewards']
+    rewards = dict[f"{reward}_{curiosity}"][f'group{group}_default']
     TP = 0
     FP = 0
     precision = []
     for i in range(len(actions)):
-        if (actions[i] == 1) & (rewards[i] > 0):
+        if (actions[i] == 1) & (rewards[i] == True):
             TP += 1
-        elif (actions[i] == 1) & (rewards[i] < 0):
+        elif (actions[i] == 1) & (rewards[i] == False):
             FP += 1
         if TP + FP == 0:
             pass
         else:
             precision.append(TP / (TP + FP))
+
 
     #Running average every 1000 steps
     precision = sliding_average(precision, 10000)
@@ -48,14 +49,14 @@ def compute_precision_over_time(reward, curiosity, group):
 def compute_recall_over_time(reward, curiosity, group):
     dict = load_pickle_files(reward, curiosity)
     actions = dict[f"{reward}_{curiosity}"][f'group{group}_actions']
-    rewards = dict[f"{reward}_{curiosity}"][f'group{group}_rewards']
+    rewards = dict[f"{reward}_{curiosity}"][f'group{group}_default']
     TP = 0
     FN = 0
     recall = []
     for i in range(len(actions)):
-        if (actions[i] == 1) & (rewards[i] > 0):
+        if (actions[i] == 1) & (rewards[i] == True):
             TP += 1
-        elif (actions[i] == 0) & (rewards[i] > 0):
+        elif (actions[i] == 0) & (rewards[i] == True):
             FN += 1
         if TP + FN == 0:
             pass
@@ -153,7 +154,7 @@ def plot_precision_and_loans(reward, curiosity, group, save=False):
     marker = 'o'
     precision = compute_precision_over_time(reward, curiosity, group)
     loans = compute_loans_over_time(reward, curiosity, group)
-    ax1.plot(precision, label=f"{reward}_{curiosity}_group{group}", c=color, marker=marker, ms=10, markevery=25000, alpha=0.6)
+    ax1.plot(precision, label=f"{reward}_{curiosity}_group{group}_precision", c=color, marker=marker, ms=10, markevery=25000, alpha=0.6)
     ax2.plot(loans, label=f"{reward}_{curiosity}_group{group}_loans", c='blue', marker=marker, ms=10, markevery=25000, alpha=0.6)
     ax1.legend(loc='upper left')
     ax2.legend(loc='upper right')
@@ -171,6 +172,6 @@ def plot_precision_and_loans(reward, curiosity, group, save=False):
 if __name__ == "__main__":
     rewards = ['UCB']
     curiosities = [0.5, 1.5, 3]
-    # plot_precision(rewards, curiosities, [0,1], save=True)
-    # plot_recall(rewards, curiosities, [0,1], save=True)
-    plot_precision_and_loans('UCB', 3, 1, save=False)
+    plot_precision(rewards, curiosities, [0,1], save=True)
+    plot_recall(rewards, curiosities, [0,1], save=True)
+    plot_precision_and_loans('scalar', 3, 1, save=False)
