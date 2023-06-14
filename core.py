@@ -274,7 +274,7 @@ class FairnessEnv(gym.Env):
     self.history = []  # type: HistoryType
     self.state = None  # type: Optional[State]
     self.reward_fn = None  # type: Optional[RewardFn]
-
+    self.params = params
     # Sometimes the action_space property is not ready here, e.g. RecsimWrapper
     if init_action_space_random_state:
       # gym.Space.np_random is created lazily, make sure it is created here.
@@ -321,17 +321,25 @@ class FairnessEnv(gym.Env):
           'State is None. State must be initialized before taking a step.'
           'If using core.FairnessEnv, subclass and implement necessary methods.'
       )
-
+      
     if not self.action_space.contains(action):
-      raise gym.error.InvalidAction('Invalid action: %s' % action)
-
+      if type(action) == np.ndarray:
+        sum_arr = np.sum(action)
+        if sum_arr > 4:
+          action = np.array(np.round(action / sum_arr * 4), dtype=np.int32)
+      else:
+        raise gym.error.InvalidAction('Invalid action: %s' % action)
+      
     self._update_history(self.state, action)
     self.state = self._step_impl(self.state, action)
     observation = self._get_observable_state()
 
     logging.debug('Observation: %s.', observation)
     logging.debug('Observation space: %s.', self.observation_space)
-
+    try:
+      observation['location_features'] = observation['location_features'].astype(np.float32)
+    except:
+      pass
     assert self.observation_space.contains(
         observation
     ), 'Observation %s is not contained in self.observation_space' % observation
@@ -339,6 +347,7 @@ class FairnessEnv(gym.Env):
     # TODO(): Remove this completely.
     # For compatibility, compute a reward_fn if one is given.
     reward = self.reward_fn(observation) if self.reward_fn is not None else 0
+   
     return observation, reward, self._is_done(), {}
 
   def seed(self, seed = None):

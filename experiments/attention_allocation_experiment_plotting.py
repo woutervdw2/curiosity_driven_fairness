@@ -103,6 +103,7 @@ def plot_occurence_action_single_dynamic(report, file_path=''):
   n_locations = report['env_params']['n_locations']
 
   action_data = np.asarray([item[1] for item in history])
+  
   plt.subplot(1, 2, 1)
   for location in range(n_locations):
     plt.plot(action_data[:, location], label='loc=%d' % (location))

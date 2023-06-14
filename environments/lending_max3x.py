@@ -156,7 +156,7 @@ class BaseLendingEnv(core.FairnessEnv):
     }
 
     self.test = test
-    self.max_hist = 500
+    self.max_hist = 1000
 
     super(BaseLendingEnv, self).__init__(params)
     self._state_init()
@@ -183,9 +183,9 @@ class BaseLendingEnv(core.FairnessEnv):
     if not self.test:
       if bool((self.state.bank_cash < self.state.params.loan_amount) | (len(self.history) > self.max_hist)):
         done = True
-        self.max_hist *= 1.03
+        self.max_hist *= 1.1
     else: 
-      if bool((self.state.bank_cash < self.state.params.loan_amount) | (len(self.history) > 1500)):
+      if bool((self.state.bank_cash < self.state.params.loan_amount) | (len(self.history) > 10000)):
         done = True
     return done
 

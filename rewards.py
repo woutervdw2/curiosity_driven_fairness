@@ -74,8 +74,17 @@ class ScalarDeltaReward(core.RewardFn):
     # last_val: {self.last_val}""")
 
     # Validates that the state variable is a scalar with this float() call.
-    current_val = float(observation[self.dict_key])
-    retval = current_val - self.last_val
+
+    if observation[self.dict_key].size != 1:
+      current_val = np.sum(observation[self.dict_key])
+      current_val = float(current_val)
+      retval = current_val
+    else:
+      # Validates that the state variable is a scalar with this float() call.
+      current_val = float(observation[self.dict_key])
+  
+      retval = current_val - self.last_val
+    
     self.last_val = current_val
     self.history.append(retval)
     return retval
@@ -120,11 +129,17 @@ class ScalarDeltaRewardWithUCB(core.RewardFn):
     # dict_key: {self.dict_key}\n
 
     # last_val: {self.last_val}""")
-
-    # Validates that the state variable is a scalar with this float() call.
-    current_val = float(observation[self.dict_key])
-    retval = current_val - self.last_val
-    self.last_val = current_val
+    if observation[self.dict_key].size != 1:
+      current_val = np.sum(observation[self.dict_key])
+      current_val = float(current_val)
+      retval = current_val
+      self.last_val = current_val
+    else:
+      # Validates that the state variable is a scalar with this float() call.
+      current_val = float(observation[self.dict_key])
+    
+      retval = current_val - self.last_val
+      self.last_val = current_val
 
     UCB = self._calculateUCB()
     self.value_history[0].append(retval)
@@ -138,14 +153,18 @@ class ScalarDeltaRewardWithUCB(core.RewardFn):
   
   def _update_history(self, action):
     #Update history with action
-    self.history.append(int(action))
+    self.history.append(action)
   
   def _calculateUCB(self):
     """Calculate the UCB value for the current history"""
     #Find last action
     last_action = self.history[-1]
     #Find number of times last action was taken
-    num_last_action = self.history.count(last_action)
+    if type(last_action) == np.ndarray:
+      num_last_action = sum(np.array_equal(last_action, action) for action in self.history)
+    else:
+      num_last_action = self.history.count(last_action)
+
 
     #Calculate UCB
     UCB = self.c * np.sqrt(np.log(len(self.history))/num_last_action)
@@ -187,10 +206,16 @@ class ScalarDeltaRewardVisitCounts(core.RewardFn):
     # dict_key: {self.dict_key}\n
 
     # last_val: {self.last_val}""")
+    if observation[self.dict_key].size != 1:
+      current_val = np.sum(observation[self.dict_key])
+      current_val = float(current_val)
+      retval = current_val
+    else:
+      # Validates that the state variable is a scalar with this float() call.
+      current_val = float(observation[self.dict_key])
 
-    # Validates that the state variable is a scalar with this float() call.
-    current_val = float(observation[self.dict_key])
-    retval = current_val - self.last_val
+      retval = current_val - self.last_val
+      
     self.last_val = current_val
 
     self.value_history[0].append(retval)
@@ -205,8 +230,10 @@ class ScalarDeltaRewardVisitCounts(core.RewardFn):
   
   def _update_history(self, state, action):
     """Update history with action state pair count"""
-    key = str(state.group) + str(action)
-
+    if type(state) == np.ndarray:
+      key = str(state) + str(action)
+    else:
+      key = str(state.group) + str(action)
     if key in self.history:
       self.history[key] += 1
     else:

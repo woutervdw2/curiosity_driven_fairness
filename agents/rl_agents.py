@@ -11,6 +11,9 @@ import core
 import params
 from agents import threshold_policies
 import gym
+import os
+
+import rewards
 
 import numpy as np
 import tensorflow as tf
@@ -36,15 +39,30 @@ class RlAgent(core.Agent):
 
     #Check if model exists
     def __attrs_post_init__(self):
-        self.path = "models/"+self.model_name
+        print(os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))+"/models/"+self.model_name)
+        print(self.model_name)
+        try:
+            self.path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))+"/models/"+self.model_name
+            print(self.path)
+            self.load_model()
+        except Exception as e:
+            print("except:", e)
+            print("except:", self.model_name)
+            self.path = "/home/woutervdw2/Documents/thesis/code/ml-fairness-gym/curiosity/ppo_lending/models/"+self.model_name[:-10]
         try:
             print(f"Model path: {self.path}")
             self.load_model()
-            self.model.set_parameters(load_path_or_dict=(self.path+".zip"))
             print("Model loaded")
-        except:
+            self.model.set_parameters(load_path_or_dict=(self.path))
+            print("Parameters set")
+        except Exception as e:
             print("Model not found, try different model name or kind")
+            print("error: ", e)
             exit()
+        
+        if self.reward_fn is None:
+            self.reward_fn = rewards.NullReward()
+        
 
     #function to load model from file
     def load_model(self):

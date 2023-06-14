@@ -240,7 +240,7 @@ class LocationAllocationEnv(core.FairnessEnv):
   def __init__(self, params = None):
     if params is None:
       params = Params()
-
+  
     self.action_space = multinomial.Multinomial(params.n_locations,
                                                 params.n_attention_units)
 

@@ -23,6 +23,11 @@ from __future__ import print_function
 from absl import flags
 import gin
 import tqdm
+import sys
+import environments
+
+import numpy as np
+import os
 
 
 FLAGS = flags.FLAGS
@@ -56,18 +61,45 @@ def run_simulation(env, agent, metrics, num_steps, seed=100, agent_seed=50):
 
   print("Starting simulation")
   simulation_iterator = tqdm.trange if FLAGS.use_tqdm else range
-
+  actions_group0 = []
+  actions_group1 = []
+  default0 = []
+  default1 = []
+  group0_features = []
+  group1_features = []
   for epoch in simulation_iterator(num_steps):
     # Update the agent with any changes to the observation or action space.
     agent.action_space, agent.observation_space = (env.action_space,
                                                    env.observation_space)
     
     action = agent.act(observation, done)
+    try:
+      if env.state.group_id == 0:
+        actions_group0.append(int(action))
+        default0.append(bool(env.state.will_default))
+        group0_features.append(np.argmax(env.state.applicant_features))
+      else:
+        actions_group1.append(int(action))
+        default1.append(bool(env.state.will_default))
+        group1_features.append(np.argmax(env.state.applicant_features))
+    except AttributeError:
+      pass
     # TODO(): Remove reward from this loop.
     observation, _, done, _ = env.step(action)
     if done:
       break
-
+    
+    try:
+      with open(os.path.abspath(os.path.join(os.path.dirname(__file__)))+"/models/"+agent.model_name[:-10]+"sim_results.txt", "w") as f:
+        f.write(f"""{actions_group0}\n
+                {actions_group1}\n  
+                {default0}\n
+                {default1}\n
+                {group0_features}\n
+                {group1_features}""")
+    except AttributeError:
+      pass
+    
   print("Measuring metrics")
   if isinstance(metrics, list):
     return [metric.measure(env) for metric in metrics]
