@@ -68,8 +68,9 @@ def compute_cond_dem_parity(reward, curiosity, dir_path):
                 for features in range(0,6):
                     with open(f"{dir_path}/fairness/cond_dem_parity.txt", "a") as f:
                         try:
-                            f.write(f"{r}_{c}_{group}_{features} total: {save_dict[f'{r}_{c}_{group}_{features}_total']}\n")
-                            f.write(f"{r}_{c}_{group}_{features} true: {save_dict[f'{r}_{c}_{group}_{features}_true']}\n")
+                            true = save_dict[f'{r}_{c}_{group}_{features}_true']
+                            total = save_dict[f'{r}_{c}_{group}_{features}_total']
+                            f.write(f"{r}_{c}_{group}_{features}: {true/total}\n")
                         except:
                             f.write(f"{r}_{c}_{group}_{features} total: 0\n")
                             f.write(f"{r}_{c}_{group}_{features} true: 0\n")
