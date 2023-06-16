@@ -1,4 +1,13 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
 import train_agent
+from environments import attention_allocation_copy as attention_allocation
+import itertools
+import csv
+from tqdm import tqdm
+
 
 env_params = attention_allocation.Params(
     n_locations = 6,
@@ -10,10 +19,9 @@ env_params = attention_allocation.Params(
     dynamic_rate = 0.1
 )
 
-MODELS_TO_TRAIN = ['visit_count', 'scalar', 'UCB']
-LEARNING_STEPS = 10000
+LEARNING_STEPS = 30000
 
-PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')+)'/parms_test/'
+PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))+'/parms_test/'
 
 if not os.path.exists(PATH):
     os.makedirs(PATH)
@@ -32,7 +40,7 @@ param_combinations = list(itertools.product(lr, gamma, clip_range, n_steps))
 
 #Define csv file to save results
 filename = PATH + 'attention_results.csv'
-fieldnames = ['index', 'lr', 'gamma', 'clip_range', 'n_steps', 'model', 'found_incidents']
+fieldnames = ['index', 'lr', 'gamma', 'clip_range', 'n_steps', 'model', 'incidents_seen']
 
 #Check if file already exists
 if os.path.exists(filename):
@@ -61,12 +69,23 @@ with open(filename, 'a', newline='') as f:
         env = train_agent.init_env(env_params, rewards=model, test=False)
         test_env = train_agent.init_env(env_params, rewards=model, test=True)
         
-        agent = train_agent.train_agent(env, PATH, rewards=model, learning_rate=lr, n_steps=n_steps,
+        agent = train_agent.train_agent(env, PATH, c=1, reward=model, learning_rate=lr, n_steps=n_steps,
                                         gamma=gamma, clip_range=clip_range, verbose=0, learning_steps=LEARNING_STEPS, save=False)
         
         #Write evaluation on test environmetn
-        
-        result = np.mean(test_results['bank_cash'])
+        done = False
+        test_env.reset()
+        obs = test_env.observation_space.sample()
+        test_results = 0
+        for _ in range(5000):
+            if done:
+                break
+            action, _states = agent.predict(obs)
+            obs, rewards, done, info = test_env.step(action)
+            test_results += rewards
+            
+
+       
         writer.writerow({'index': i, 'lr': lr, 'gamma': gamma, 'clip_range': clip_range, 
-                            'n_steps': n_steps, 'model': model, 'bank_cash': result})
+                            'n_steps': n_steps, 'model': model, 'incidents_seen': test_results})
         f.flush()

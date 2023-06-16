@@ -25,8 +25,11 @@ def read_txt_file(r, c, dir_path):
         actions_group1 = eval(lines[1])
         default0 = eval(lines[2])
         default1 = eval(lines[3])
+        features0 = eval(lines[4])
+        features1 = eval(lines[5])
     dict[f"{r}_{c}"] = {'group0_actions': actions_group0, 'group1_actions': actions_group1,
-                             'group0_default': default0, 'group1_default': default1} 
+                             'group0_default': default0, 'group1_default': default1,
+                             'group0_features': features0, 'group1_features': features1} 
 
     return dict
 
@@ -50,9 +53,9 @@ def compute_precision_over_time(reward, curiosity, group, sim=False, dir_path=No
     FP = 0
     precision = []
     for i in range(len(actions)):
-        if (actions[i] == 1) & (rewards[i] == True):
+        if (actions[i] == 1) & (rewards[i] == False):
             TP += 1
-        elif (actions[i] == 1) & (rewards[i] == False):
+        elif (actions[i] == 1) & (rewards[i] == True):
             FP += 1
         if TP + FP == 0:
             precision.append(1)
@@ -77,9 +80,9 @@ def compute_recall_over_time(reward, curiosity, group, sim=False, dir_path=None)
     FN = 0
     recall = []
     for i in range(len(actions)):
-        if (actions[i] == 1) & (rewards[i] == True):
+        if (actions[i] == 1) & (rewards[i] == False):
             TP += 1
-        elif (actions[i] == 0) & (rewards[i] == True):
+        elif (actions[i] == 0) & (rewards[i] == False):
             FN += 1
         if TP + FN == 0:
             recall.append(1)
@@ -91,7 +94,7 @@ def compute_recall_over_time(reward, curiosity, group, sim=False, dir_path=None)
 
 #Function that plots precision for given rewards and curiosities in one plot
 def plot_precision(rewards, curiosities, group, save=False, sim=False, dir_path=None):
-    plt.figure()
+    plt.figure(figsize=(10, 6))
     for r in rewards:
         if r == 'scalar':
             color = 'red'
@@ -110,24 +113,26 @@ def plot_precision(rewards, curiosities, group, save=False, sim=False, dir_path=
                         color = 'red'
                     elif c == 1.5:
                         color = 'blue'
-                    else:
+                    elif c == 3.0:
                         color = 'green'
+                    else:
+                        color = 'orange'
                 precision = compute_precision_over_time(r, c, g, sim=sim, dir_path=dir_path)
-                plt.plot(precision, label=f"{r}_{c}_group{g}", c=color, marker=marker, ms=10, markevery=1000)
+                plt.plot(precision, label=f"{r}_{c}_group{g+1}", c=color, marker=marker, ms=10, markevery=1000)
     plt.legend()
     plt.grid()
     plt.title(f"Precision over time")
     plt.xlabel("Time")
     plt.ylabel("Precision")
     if save:
-        if not os.path.exists(dir_path+"plots/precision"):
-            os.makedirs(dir_path+"plots/precision")
-        plt.savefig(f"{dir_path}plots/precision/precision_over_time_{rewards}_{curiosities}.png")
+        if not os.path.exists(dir_path+"final_plots/precision"):
+            os.makedirs(dir_path+"final_plots/precision")
+        plt.savefig(f"{dir_path}final_plots/precision/precision_over_time_{rewards}_{curiosities}_{group}.png", bbox_inches='tight')
     plt.show()
 
 #Function that plots recall for given rewards and curiosities in one plot
 def plot_recall(rewards, curiosities, group, save=False, sim=False, dir_path=None):
-    plt.figure()
+    plt.figure(figsize=(11, 6))
     for r in rewards:
         if r == 'scalar':
             color = 'red'
@@ -146,19 +151,22 @@ def plot_recall(rewards, curiosities, group, save=False, sim=False, dir_path=Non
                         color = 'red'
                     elif c == 1.5:
                         color = 'blue'
-                    else:
+                    elif c == 3.0:
                         color = 'green'
+                    else:
+                        color = 'orange'
                 recall = compute_recall_over_time(r, c, g, sim=sim, dir_path=dir_path)
-                plt.plot(recall, label=f"{r}_{c}_group{g}", c=color, marker=marker, ms=10, markevery=1000)
+                plt.plot(recall, label=f"{r}_{c}_group{g+1}", c=color, marker=marker, ms=10, markevery=1000,
+                         alpha=.8)
     plt.legend()
     plt.grid()
     plt.title(f"Recall over time")
     plt.xlabel("Time")
     plt.ylabel("Recall")
     if save:
-        if not os.path.exists(dir_path+"plots/recall"):
-            os.makedirs(dir_path+"plots/recall")
-        plt.savefig(f"{dir_path}plots/recall/recall_over_time_{rewards}_{curiosities}.png")
+        if not os.path.exists(dir_path+"final_plots/recall"):
+            os.makedirs(dir_path+"final_plots/recall")
+        plt.savefig(f"{dir_path}final_plots/recall/recall_over_time_{rewards}_{curiosities}_{group}.png")
     plt.show()
 
 #Funciton that returns a list with a running average over the number of loans given for a given reward and curiosity
@@ -181,9 +189,11 @@ def plot_loans(rewards, curiosities, group, save=False, sim=False, dir_path=None
                 color = 'red'
             elif c == 1.5:
                 color = 'blue'
-            else:
+            elif c == 3.0:
                 color = 'green'
-            color_changed = True
+            else:
+                color = 'orange'
+            color_changed = False
         for r in rewards:
             if color_changed:
                 pass
@@ -200,19 +210,17 @@ def plot_loans(rewards, curiosities, group, save=False, sim=False, dir_path=None
                         color = 'red'
                 else:
                     marker = 'x'
-                    if not color_changed:
-                        color = 'blue'
                 loans = compute_loans_over_time(r, c, g, sim=sim, dir_path=dir_path)
-                plt.plot(loans, label=f"{r}_{c}_group{g}", ms=10, markevery=1000, c=color, marker=marker)
+                plt.plot(loans, label=f"{r}_{c}_group{g+1}", ms=10, markevery=1000, c=color, marker=marker, alpha=.8)
     plt.legend()
     plt.grid()
     plt.title(f"Loans over time")
     plt.xlabel("Time")
     plt.ylabel("Loans")
     if save:
-        if not os.path.exists(dir_path+"plots/loans"):
-            os.makedirs(dir_path+"plots/loans")
-        plt.savefig(f"{dir_path}plots/loans/loans_over_time_{rewards}_{curiosities}.png")
+        if not os.path.exists(dir_path+"final_plots/loans"):
+            os.makedirs(dir_path+"final_plots/loans")
+        plt.savefig(f"{dir_path}final_plots/loans/loans_over_time_{rewards}_{curiosities}.png", bbox_inches='tight')
     plt.show()
     
 #Function that plots loans and precsion for given reward and curiosity in a single plot using 2 y-axes
@@ -223,8 +231,8 @@ def plot_precision_and_loans(reward, curiosity, group, save=False, sim=False, di
     marker = 'o'
     precision = compute_precision_over_time(reward, curiosity, group, sim=sim, dir_path=dir_path)
     loans = compute_loans_over_time(reward, curiosity, group, sim=sim, dir_path=dir_path)
-    ax1.plot(precision, label=f"{reward}_{curiosity}_group{group}_precision", c=color, marker=marker, ms=10, markevery=1000, alpha=0.6)
-    ax2.plot(loans, label=f"{reward}_{curiosity}_group{group}_loans", c='blue', marker=marker, ms=10, markevery=1000, alpha=0.6)
+    ax1.plot(precision, label=f"{reward}-c={curiosity} precision", c=color, marker=marker, ms=10, markevery=1000, alpha=0.6)
+    ax2.plot(loans, label=f"{reward}-c={curiosity} loans", c='blue', marker=marker, ms=10, markevery=1000, alpha=0.6)
     ax1.legend(loc='upper left')
     ax2.legend(loc='upper right')
     ax1.grid()
@@ -233,19 +241,39 @@ def plot_precision_and_loans(reward, curiosity, group, save=False, sim=False, di
     ax2.set_ylabel("Loans")
     ax1.set_title(f"Precision and loans over time")
     if save:
-        if not os.path.exists(dir_path+"plots/precision_and_loans"):
-            os.makedirs(dir_path+"plots/precision_and_loans")
-        plt.savefig(f"{dir_path}plots/precision_and_loans/precision_and_loans_over_time_{reward}_{curiosity}.png")
+        if not os.path.exists(dir_path+"final_plots/precision_and_loans"):
+            os.makedirs(dir_path+"final_plots/precision_and_loans")
+        plt.savefig(f"{dir_path}final_plots/precision_and_loans/precision_and_loans_over_time_{reward}_{curiosity}_{group}.png", bbox_inches='tight')
     plt.show()
 
+def barplot_precision(reward, curiosity, group, save=False, sim=False, dir_path=None):
+    dict = {}
+    for r in reward:
+        for c in curiosity:
+            for g in group:
+                dict[f'{r}_{c}_{g}'] = compute_precision_over_time(r, c, g, sim=sim, dir_path=dir_path)[-1]
+    plt.figure()
+    plt.bar(dict.keys(), dict.values(), color=['red', 'blue', 'green'], alpha=.8)
+    plt.title(f"Precision comparison with c=0.5")
+    plt.xlabel("Reward and curiosity")
+    plt.ylabel("Precision")
+    plt.xticks(rotation=45, labels=[f'Scalar', f'UCB', f'Visit-Counts'], ticks=[0, 1, 2])
+    plt.tight_layout()
+    plt.savefig(f"{dir_path}final_plots/precision_comparison_{r}_{c}_{g}.png")
+    plt.show()
+                
+                
+                
 if __name__ == "__main__":
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))+"/"
-    # rewards = ['UCB']
-    # curiosities = [6]
-    # plot_precision(rewards, curiosities, [1], save=True, sim=True, dir_path=dir_path)
-    # plot_recall(rewards, curiosities, [1], save=True, sim=True, dir_path=dir_path)
-    # plot_precision_and_loans('visit_count', 6, 1, save=True, sim=True, dir_path=dir_path)
-    # plot_precision_and_loans('visit_count', 0.5, 1, save=True, sim=True, dir_path=dir_path)
-    # plot_loans(rewards, curiosities, [0, 1], save=True, sim=True, dir_path=dir_path)
+    rewards = ['visit_count', "UCB", "scalar"]
+    curiosities = [6]
+    groups = [1]
+    # plot_precision(rewards, curiosities, groups, save=True, sim=True, dir_path=dir_path)
+    # barplot_precision(rewards, curiosities, groups, save=True, sim=True, dir_path=dir_path) 
+    # plot_recall(rewards, curiosities, groups, save=True, sim=True, dir_path=dir_path)
+    # plot_precision_and_loans('scalar', 3, 1, save=True, sim=True, dir_path=dir_path)
+    # plot_precision_and_loans('scalar', 1.5, 1, save=True, sim=True, dir_path=dir_path)
+    plot_loans(rewards, curiosities, groups, save=True, sim=True, dir_path=dir_path)
     
     

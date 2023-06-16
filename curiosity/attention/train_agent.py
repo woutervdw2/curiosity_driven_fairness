@@ -103,7 +103,7 @@ def plot_cumulative_reward(agent, rewards, path, c, show_plot=True):
 def main():
     LEARNING_STEPS = 600000
     MODELS = ['visit_count', 'scalar', 'UCB']
-    curiosities = [3, 6]
+    curiosities = [6]
     env_params = attention_allocation.Params(
         n_locations = 6,
         prior_incident_counts =  (600, 500, 400, 300, 200, 100),

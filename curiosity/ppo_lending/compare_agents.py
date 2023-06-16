@@ -1,6 +1,7 @@
 # #Add parent folder
 import sys
-sys.path.append("/home/woutervdw2/Documents/thesis/code/ml-fairness-gym")
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 #Lending environment without max bank cash
 # from environments import lending
@@ -12,7 +13,7 @@ from environments import lending_params
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-import os
+
 
 from rl_agent import run_all
 
@@ -45,8 +46,8 @@ def grouped_barplot(data, group_names, title, xlabel, ylabel, x_tick_labels=None
     # Loop through each column and plot the bars
     for i in range(len(data)):
         if i == 0:
-            ax.bar(x_pos[i], data[i][0], bar_width, label=group_names[0], color='orange')
-            ax.bar(x_pos[i] + bar_width, data[i][1], bar_width, label=group_names[1], color='blue')
+            ax.bar(x_pos[i], data[i][0], bar_width, label="Group 1", color='orange')
+            ax.bar(x_pos[i] + bar_width, data[i][1], bar_width, label="Group 2", color='blue')
         else:
             ax.bar(x_pos[i], data[i][0], bar_width, color='orange')
             ax.bar(x_pos[i] + bar_width, data[i][1], bar_width, color='blue')
@@ -106,9 +107,9 @@ def compare_agents(env_params, models, **kwargs):
         A list of the test results for each model.
     """
 
-    PLOT_PATH = 'plots/'
+    PLOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))+'/plots/'
     if 'model_name' in kwargs['kwargs']:
-        PLOT_PATH = 'plots/'+kwargs['kwargs']['model_name']+'/'   
+        PLOT_PATH += kwargs['kwargs']['model_name']+'/'   
 
     #Check path exists, else create path
     if not os.path.exists(PLOT_PATH):
@@ -132,10 +133,15 @@ def compare_agents(env_params, models, **kwargs):
         grouped_actions = [[np.mean(test_results_dict[model+'actions'].group0_actions), 
         np.mean(test_results_dict[model+'actions'].group1_actions)] for model in MODELS_TO_TRAIN]
 
+    else:
+        MODELS_TO_TRAIN = models
 
-        grouped_barplot(grouped_actions, ['Group 0', 'Group 1'],
-                        'Mean positive actions per group and model', 'Model',
-                        'Mean positive actions', MODELS_TO_TRAIN, PLOT_PATH=PLOT_PATH)
+        grouped_actions = [[np.mean(test_results_dict[model]['group1_actions']),
+                            np.mean(test_results_dict[model]['group2_actions'])] for model in MODELS_TO_TRAIN]
+
+    grouped_barplot(grouped_actions, ['Group 1', 'Group 2'],
+                    'Mean positive actions per group and model', 'Model',
+                    'Mean positive actions', MODELS_TO_TRAIN, PLOT_PATH=PLOT_PATH)
 
     return 
 

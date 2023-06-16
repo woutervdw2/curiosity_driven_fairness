@@ -1,8 +1,8 @@
 # #Add parent folder
 import sys
-sys.path.append("/home/woutervdw2/Documents/thesis/code/ml-fairness-gym")
-
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
 #Lending environment without max bank cash
 # from environments import lending
 #Lending environment with max bank cash
@@ -23,6 +23,7 @@ import pickle
 
 import numpy as np
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 
 
@@ -213,13 +214,20 @@ def test_agent(agent, env, n_steps=100, nr_runs=10):
     test_rewards = []
     test_actions = []
     bank_cash_history = []
-    for _ in range(nr_runs):
+    group1_actions = []
+    group2_actions = []
+    for _ in tqdm(range(nr_runs)):
         obs = env.reset()
-        for _ in     range(n_steps):
+        for _ in range(n_steps):
             # print('before:', obs)
             action, __ = agent.predict(obs, deterministic=True)
             # print('action:', action)
             test_actions.append(action)
+
+            if env.state.group_id == 0:
+                group1_actions.append(action)
+            else:
+                group2_actions.append(action)
             obs, rewards, done, info = env.step(action)
             # print('after:', obs)
             # print('reward:', rewards)
@@ -236,7 +244,9 @@ def test_agent(agent, env, n_steps=100, nr_runs=10):
 
     test_results = {'bank_cash': bank_cash_history,
                     'avg_test_reward': np.mean(test_rewards),
-                    'test_rewards': test_rewards}
+                    'test_rewards': test_rewards,
+                    'group1_actions': group1_actions,
+                    'group2_actions': group2_actions}
     
     return test_results
 
@@ -418,7 +428,7 @@ def run_all(env_params, beta=1, c=1, learning_rate=0.0003, n_steps=2048, batch_s
             seed=None, learning_steps=100000, model_name='ppo_lending/', verbose=1,
             path='models/', n_test_steps=100, rewards='scalar', show_plot=True, train=True):
     
-    path = path+model_name+rewards+'/'
+    path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))+"/"+path+model_name+rewards+'/'
     os.makedirs(path, exist_ok=True)
     #Initialize environment
     env = init_env(env_params, rewards=rewards, beta=beta, c=c)
@@ -451,9 +461,9 @@ def run_all(env_params, beta=1, c=1, learning_rate=0.0003, n_steps=2048, batch_s
     print('Agent tested')
 
     #Get baseline results
-    print('Getting baseline results...')
-    baseline_results = get_baseline_results(env, n_steps=n_test_steps)
-    print('Baseline results obtained')
+    # print('Getting baseline results...')
+    # baseline_results = get_baseline_results(env, n_steps=n_test_steps)
+    # print('Baseline results obtained')
 
     #Plot results
     if train:
@@ -464,7 +474,7 @@ def run_all(env_params, beta=1, c=1, learning_rate=0.0003, n_steps=2048, batch_s
     if train:
         return test_results, baseline_results, actions_callback
     else:
-        return test_results, baseline_results, None
+        return test_results, None, None
     
 
 if __name__ == '__main__':

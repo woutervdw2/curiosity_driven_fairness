@@ -1,9 +1,9 @@
 """File that trains agents on chosen parm combination, 
 Test the agents on the test set and plots the results.
 Last it assessess the fairness of the agents on the lending environment"""
-
+import os
 import sys
-sys.path.append("/home/woutervdw2/Documents/thesis/code/ml-fairness-gym")
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 #Lending environment without max bank cash
 # from environments import lending
@@ -20,8 +20,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-
-import os
 
 def main():
     #Constants
@@ -64,19 +62,19 @@ def main():
             # final_training_agents(env_params, models=MODELS, kwargs=train_args)
 
 
-            # #Compare final agents
-            # test_args = {
-            #     'n_test_steps': 1000,
-            #     'train': False,
-            #     'show_plot': False,
-            #     'model_name': model_name
-            # }
+            #Compare final agents
+            test_args = {
+                'n_test_steps': 10000,
+                'train': False,
+                'show_plot': False,
+                'model_name': model_name
+            }
 
-            # MODELS = ['UCB', 'visit_count', 'scalar']
-            # # #While comparing print terminal output colored blue
-            # sys.stdout.write("\033[1;34m")
-            # print("Comparing agents on test environments"+'-'*100)
-            # compare_agents(env_params, models=MODELS, kwargs=test_args)
+            MODELS = ['UCB', 'visit_count', 'scalar']
+            # #While comparing print terminal output colored blue
+            sys.stdout.write("\033[1;34m")
+            print("Comparing agents on test environments"+'-'*100)
+            compare_agents(env_params, models=MODELS, kwargs=test_args)
 
             #While assessing print terminal output colored yellow
             sys.stdout.write("\033[1;33m")
