@@ -25,7 +25,7 @@ def main():
     #Constants
     LEARNING_STEPS = [500000]
     MODELS = ['UCB', 'visit_count', 'scalar']
-    curiosity = [0.5, 1.5, 3, 6]
+    curiosity = [1.5]
     for c in curiosity:
         for n_steps in LEARNING_STEPS:
             model_name = f"ppo_lending/{n_steps}_{c}"
@@ -45,7 +45,7 @@ def main():
                     cluster_shift_increment=cluster_shift_increment
                 )
             
-            # # # # # # run_all arguments
+            # # # # # # # run_all arguments
             # train_args = {
             #     'verbose': 0,
             #     'learning_steps': n_steps,
@@ -70,7 +70,6 @@ def main():
                 'model_name': model_name
             }
 
-            MODELS = ['UCB', 'visit_count', 'scalar']
             # #While comparing print terminal output colored blue
             sys.stdout.write("\033[1;34m")
             print("Comparing agents on test environments"+'-'*100)

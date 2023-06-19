@@ -7,6 +7,7 @@ UCB_0.5_0_2 true: 0
 UCB_0.5_0_3: 0.9867549668874173
 UCB_0.5_0_4: 1.0
 UCB_0.5_0_5: 1.0
+UCB_0.5_0_total: 0.14777646595828414
 UCB_0.5_1_0 total: 0
 UCB_0.5_1_0 true: 0
 UCB_0.5_1_1 total: 0
@@ -16,6 +17,7 @@ UCB_0.5_1_2 true: 0
 UCB_0.5_1_3: 1.0
 UCB_0.5_1_4: 1.0
 UCB_0.5_1_5: 1.0
+UCB_0.5_1_total: 0.09536396909312729
 UCB_1.5_0_0 total: 0
 UCB_1.5_0_0 true: 0
 UCB_1.5_0_1 total: 0
@@ -24,6 +26,7 @@ UCB_1.5_0_2: 0.19753086419753085
 UCB_1.5_0_3: 0.15667311411992263
 UCB_1.5_0_4: 1.0
 UCB_1.5_0_5: 1.0
+UCB_1.5_0_total: 0.14718614718614717
 UCB_1.5_1_0 total: 0
 UCB_1.5_1_0 true: 0
 UCB_1.5_1_1 total: 0
@@ -32,6 +35,7 @@ UCB_1.5_1_2: 0.10582010582010581
 UCB_1.5_1_3: 0.2467718794835007
 UCB_1.5_1_4: 1.0
 UCB_1.5_1_5: 1.0
+UCB_1.5_1_total: 0.13572590483936559
 UCB_3_0_0 total: 0
 UCB_3_0_0 true: 0
 UCB_3_0_1 total: 0
@@ -40,6 +44,7 @@ UCB_3_0_2: 1.0
 UCB_3_0_3: 1.0
 UCB_3_0_4: 1.0
 UCB_3_0_5: 1.0
+UCB_3_0_total: 0.1829988193624557
 UCB_3_1_0 total: 0
 UCB_3_1_0 true: 0
 UCB_3_1_1 total: 0
@@ -48,6 +53,7 @@ UCB_3_1_2: 1.0
 UCB_3_1_3: 1.0
 UCB_3_1_4: 1.0
 UCB_3_1_5: 1.0
+UCB_3_1_total: 0.15727938186254575
 UCB_6_0_0 total: 0
 UCB_6_0_0 true: 0
 UCB_6_0_1: 0.9545454545454546
@@ -55,6 +61,7 @@ UCB_6_0_2: 1.0
 UCB_6_0_3: 1.0
 UCB_6_0_4: 1.0
 UCB_6_0_5: 1.0
+UCB_6_0_total: 0.21044864226682408
 UCB_6_1_0 total: 0
 UCB_6_1_0 true: 0
 UCB_6_1_1: 0.9761904761904762
@@ -62,12 +69,14 @@ UCB_6_1_2: 0.9398496240601504
 UCB_6_1_3: 1.0
 UCB_6_1_4: 1.0
 UCB_6_1_5: 1.0
+UCB_6_1_total: 0.18808458723058152
 scalar_0.5_0_0: 0.31351351351351353
 scalar_0.5_0_1: 1.0
 scalar_0.5_0_2: 1.0
 scalar_0.5_0_3: 1.0
 scalar_0.5_0_4: 1.0
 scalar_0.5_0_5: 1.0
+scalar_0.5_0_total: 0.22432113341204252
 scalar_0.5_1_0 total: 0
 scalar_0.5_1_0 true: 0
 scalar_0.5_1_1: 0.7941176470588235
@@ -75,6 +84,7 @@ scalar_0.5_1_2: 1.0
 scalar_0.5_1_3: 1.0
 scalar_0.5_1_4: 1.0
 scalar_0.5_1_5: 1.0
+scalar_0.5_1_total: 0.17090280601870678
 scalar_1.5_0_0 total: 0
 scalar_1.5_0_0 true: 0
 scalar_1.5_0_1: 0.6666666666666666
@@ -82,6 +92,7 @@ scalar_1.5_0_2: 1.0
 scalar_1.5_0_3: 1.0
 scalar_1.5_0_4: 1.0
 scalar_1.5_0_5: 1.0
+scalar_1.5_0_total: 0.19539551357733176
 scalar_1.5_1_0 total: 0
 scalar_1.5_1_0 true: 0
 scalar_1.5_1_1 total: 0
@@ -90,6 +101,7 @@ scalar_1.5_1_2: 1.0
 scalar_1.5_1_3: 1.0
 scalar_1.5_1_4: 1.0
 scalar_1.5_1_5: 1.0
+scalar_1.5_1_total: 0.15727938186254575
 scalar_3_0_0 total: 0
 scalar_3_0_0 true: 0
 scalar_3_0_1 total: 0
@@ -98,6 +110,7 @@ scalar_3_0_2: 1.0
 scalar_3_0_3: 1.0
 scalar_3_0_4: 1.0
 scalar_3_0_5: 1.0
+scalar_3_0_total: 0.1829988193624557
 scalar_3_1_0 total: 0
 scalar_3_1_0 true: 0
 scalar_3_1_1 total: 0
@@ -106,6 +119,7 @@ scalar_3_1_2: 1.0
 scalar_3_1_3: 1.0
 scalar_3_1_4: 1.0
 scalar_3_1_5: 1.0
+scalar_3_1_total: 0.15727938186254575
 scalar_6_0_0 total: 0
 scalar_6_0_0 true: 0
 scalar_6_0_1 total: 0
@@ -114,6 +128,7 @@ scalar_6_0_2: 1.0
 scalar_6_0_3: 1.0
 scalar_6_0_4: 1.0
 scalar_6_0_5: 1.0
+scalar_6_0_total: 0.1829988193624557
 scalar_6_1_0 total: 0
 scalar_6_1_0 true: 0
 scalar_6_1_1 total: 0
@@ -122,6 +137,7 @@ scalar_6_1_2: 0.9142857142857143
 scalar_6_1_3: 1.0
 scalar_6_1_4: 1.0
 scalar_6_1_5: 1.0
+scalar_6_1_total: 0.1447742984953233
 visit_count_0.5_0_0 total: 0
 visit_count_0.5_0_0 true: 0
 visit_count_0.5_0_1: 0.005313199105145414
@@ -129,6 +145,7 @@ visit_count_0.5_0_2: 0.11578947368421053
 visit_count_0.5_0_3: 0.5154639175257731
 visit_count_0.5_0_4: 1.0
 visit_count_0.5_0_5: 1.0
+visit_count_0.5_0_total: 0.17522628886265249
 visit_count_0.5_1_0 total: 0
 visit_count_0.5_1_0 true: 0
 visit_count_0.5_1_1 total: 0
@@ -137,22 +154,27 @@ visit_count_0.5_1_2: 0.09735744089012517
 visit_count_0.5_1_3: 0.1359315589353612
 visit_count_0.5_1_4: 0.47674418604651164
 visit_count_0.5_1_5: 1.0
+visit_count_0.5_1_total: 0.11569743798291988
 visit_count_1.5_0_0 total: 0
 visit_count_1.5_0_0 true: 0
 visit_count_1.5_0_1 total: 0
 visit_count_1.5_0_1 true: 0
-visit_count_1.5_0_2: 1.0
-visit_count_1.5_0_3: 1.0
-visit_count_1.5_0_4: 1.0
+visit_count_1.5_0_2 total: 0
+visit_count_1.5_0_2 true: 0
+visit_count_1.5_0_3: 0.43729903536977494
+visit_count_1.5_0_4: 0.8285077951002228
 visit_count_1.5_0_5: 1.0
+visit_count_1.5_0_total: 0.1402990948445494
 visit_count_1.5_1_0 total: 0
 visit_count_1.5_1_0 true: 0
 visit_count_1.5_1_1 total: 0
 visit_count_1.5_1_1 true: 0
-visit_count_1.5_1_2: 1.0
-visit_count_1.5_1_3: 1.0
-visit_count_1.5_1_4: 1.0
+visit_count_1.5_1_2 total: 0
+visit_count_1.5_1_2 true: 0
+visit_count_1.5_1_3: 0.5275229357798165
+visit_count_1.5_1_4: 0.5626423690205011
 visit_count_1.5_1_5: 1.0
+visit_count_1.5_1_total: 0.08560390402602683
 visit_count_3_0_0 total: 0
 visit_count_3_0_0 true: 0
 visit_count_3_0_1 total: 0
@@ -161,6 +183,7 @@ visit_count_3_0_2: 1.0
 visit_count_3_0_3: 1.0
 visit_count_3_0_4: 1.0
 visit_count_3_0_5: 1.0
+visit_count_3_0_total: 0.1829988193624557
 visit_count_3_1_0 total: 0
 visit_count_3_1_0 true: 0
 visit_count_3_1_1 total: 0
@@ -169,6 +192,7 @@ visit_count_3_1_2: 1.0
 visit_count_3_1_3: 1.0
 visit_count_3_1_4: 1.0
 visit_count_3_1_5: 1.0
+visit_count_3_1_total: 0.15727938186254575
 visit_count_6_0_0 total: 0
 visit_count_6_0_0 true: 0
 visit_count_6_0_1: 0.023316062176165803
@@ -176,6 +200,7 @@ visit_count_6_0_2: 1.0
 visit_count_6_0_3: 0.5651105651105651
 visit_count_6_0_4: 1.0
 visit_count_6_0_5: 1.0
+visit_count_6_0_total: 0.19155844155844154
 visit_count_6_1_0 total: 0
 visit_count_6_1_0 true: 0
 visit_count_6_1_1: 0.004330106979113602
@@ -183,3 +208,211 @@ visit_count_6_1_2: 1.0
 visit_count_6_1_3: 0.19305856832971802
 visit_count_6_1_4: 1.0
 visit_count_6_1_5: 1.0
+visit_count_6_1_total: 0.14111427409516064
+UCB_0.5_0_0 total: 0
+UCB_0.5_0_0 true: 0
+UCB_0.5_0_1 total: 0
+UCB_0.5_0_1 true: 0
+UCB_0.5_0_2 total: 0
+UCB_0.5_0_2 true: 0
+UCB_0.5_0_3: 0.9867549668874173
+UCB_0.5_0_4: 1.0
+UCB_0.5_0_5: 1.0
+UCB_0.5_0_total: 0.14777646595828414
+UCB_0.5_1_0 total: 0
+UCB_0.5_1_0 true: 0
+UCB_0.5_1_1 total: 0
+UCB_0.5_1_1 true: 0
+UCB_0.5_1_2 total: 0
+UCB_0.5_1_2 true: 0
+UCB_0.5_1_3: 1.0
+UCB_0.5_1_4: 1.0
+UCB_0.5_1_5: 1.0
+UCB_0.5_1_total: 0.09536396909312729
+UCB_1.5_0_0 total: 0
+UCB_1.5_0_0 true: 0
+UCB_1.5_0_1 total: 0
+UCB_1.5_0_1 true: 0
+UCB_1.5_0_2: 0.19753086419753085
+UCB_1.5_0_3: 0.15667311411992263
+UCB_1.5_0_4: 1.0
+UCB_1.5_0_5: 1.0
+UCB_1.5_0_total: 0.14718614718614717
+UCB_1.5_1_0 total: 0
+UCB_1.5_1_0 true: 0
+UCB_1.5_1_1 total: 0
+UCB_1.5_1_1 true: 0
+UCB_1.5_1_2: 0.10582010582010581
+UCB_1.5_1_3: 0.2467718794835007
+UCB_1.5_1_4: 1.0
+UCB_1.5_1_5: 1.0
+UCB_1.5_1_total: 0.13572590483936559
+UCB_3_0_0 total: 0
+UCB_3_0_0 true: 0
+UCB_3_0_1 total: 0
+UCB_3_0_1 true: 0
+UCB_3_0_2: 1.0
+UCB_3_0_3: 1.0
+UCB_3_0_4: 1.0
+UCB_3_0_5: 1.0
+UCB_3_0_total: 0.1829988193624557
+UCB_3_1_0 total: 0
+UCB_3_1_0 true: 0
+UCB_3_1_1 total: 0
+UCB_3_1_1 true: 0
+UCB_3_1_2: 1.0
+UCB_3_1_3: 1.0
+UCB_3_1_4: 1.0
+UCB_3_1_5: 1.0
+UCB_3_1_total: 0.15727938186254575
+UCB_6_0_0 total: 0
+UCB_6_0_0 true: 0
+UCB_6_0_1: 0.9545454545454546
+UCB_6_0_2: 1.0
+UCB_6_0_3: 1.0
+UCB_6_0_4: 1.0
+UCB_6_0_5: 1.0
+UCB_6_0_total: 0.21044864226682408
+UCB_6_1_0 total: 0
+UCB_6_1_0 true: 0
+UCB_6_1_1: 0.9761904761904762
+UCB_6_1_2: 0.9398496240601504
+UCB_6_1_3: 1.0
+UCB_6_1_4: 1.0
+UCB_6_1_5: 1.0
+UCB_6_1_total: 0.18808458723058152
+scalar_0.5_0_0: 0.31351351351351353
+scalar_0.5_0_1: 1.0
+scalar_0.5_0_2: 1.0
+scalar_0.5_0_3: 1.0
+scalar_0.5_0_4: 1.0
+scalar_0.5_0_5: 1.0
+scalar_0.5_0_total: 0.22432113341204252
+scalar_0.5_1_0 total: 0
+scalar_0.5_1_0 true: 0
+scalar_0.5_1_1: 0.7941176470588235
+scalar_0.5_1_2: 1.0
+scalar_0.5_1_3: 1.0
+scalar_0.5_1_4: 1.0
+scalar_0.5_1_5: 1.0
+scalar_0.5_1_total: 0.17090280601870678
+scalar_1.5_0_0 total: 0
+scalar_1.5_0_0 true: 0
+scalar_1.5_0_1: 0.6666666666666666
+scalar_1.5_0_2: 1.0
+scalar_1.5_0_3: 1.0
+scalar_1.5_0_4: 1.0
+scalar_1.5_0_5: 1.0
+scalar_1.5_0_total: 0.19539551357733176
+scalar_1.5_1_0 total: 0
+scalar_1.5_1_0 true: 0
+scalar_1.5_1_1 total: 0
+scalar_1.5_1_1 true: 0
+scalar_1.5_1_2: 1.0
+scalar_1.5_1_3: 1.0
+scalar_1.5_1_4: 1.0
+scalar_1.5_1_5: 1.0
+scalar_1.5_1_total: 0.15727938186254575
+scalar_3_0_0 total: 0
+scalar_3_0_0 true: 0
+scalar_3_0_1 total: 0
+scalar_3_0_1 true: 0
+scalar_3_0_2: 1.0
+scalar_3_0_3: 1.0
+scalar_3_0_4: 1.0
+scalar_3_0_5: 1.0
+scalar_3_0_total: 0.1829988193624557
+scalar_3_1_0 total: 0
+scalar_3_1_0 true: 0
+scalar_3_1_1 total: 0
+scalar_3_1_1 true: 0
+scalar_3_1_2: 1.0
+scalar_3_1_3: 1.0
+scalar_3_1_4: 1.0
+scalar_3_1_5: 1.0
+scalar_3_1_total: 0.15727938186254575
+scalar_6_0_0 total: 0
+scalar_6_0_0 true: 0
+scalar_6_0_1 total: 0
+scalar_6_0_1 true: 0
+scalar_6_0_2: 1.0
+scalar_6_0_3: 1.0
+scalar_6_0_4: 1.0
+scalar_6_0_5: 1.0
+scalar_6_0_total: 0.1829988193624557
+scalar_6_1_0 total: 0
+scalar_6_1_0 true: 0
+scalar_6_1_1 total: 0
+scalar_6_1_1 true: 0
+scalar_6_1_2: 0.9142857142857143
+scalar_6_1_3: 1.0
+scalar_6_1_4: 1.0
+scalar_6_1_5: 1.0
+scalar_6_1_total: 0.1447742984953233
+visit_count_0.5_0_0 total: 0
+visit_count_0.5_0_0 true: 0
+visit_count_0.5_0_1: 0.005313199105145414
+visit_count_0.5_0_2: 0.11578947368421053
+visit_count_0.5_0_3: 0.5154639175257731
+visit_count_0.5_0_4: 1.0
+visit_count_0.5_0_5: 1.0
+visit_count_0.5_0_total: 0.17522628886265249
+visit_count_0.5_1_0 total: 0
+visit_count_0.5_1_0 true: 0
+visit_count_0.5_1_1 total: 0
+visit_count_0.5_1_1 true: 0
+visit_count_0.5_1_2: 0.09735744089012517
+visit_count_0.5_1_3: 0.1359315589353612
+visit_count_0.5_1_4: 0.47674418604651164
+visit_count_0.5_1_5: 1.0
+visit_count_0.5_1_total: 0.11569743798291988
+visit_count_1.5_0_0 total: 0
+visit_count_1.5_0_0 true: 0
+visit_count_1.5_0_1: 1.0
+visit_count_1.5_0_2: 1.0
+visit_count_1.5_0_3: 1.0
+visit_count_1.5_0_4: 1.0
+visit_count_1.5_0_5: 1.0
+visit_count_1.5_0_total: 0.21448248720975993
+visit_count_1.5_1_0 total: 0
+visit_count_1.5_1_0 true: 0
+visit_count_1.5_1_1: 1.0
+visit_count_1.5_1_2: 1.0
+visit_count_1.5_1_3: 1.0
+visit_count_1.5_1_4: 1.0
+visit_count_1.5_1_5: 1.0
+visit_count_1.5_1_total: 0.1901179341195608
+visit_count_3_0_0 total: 0
+visit_count_3_0_0 true: 0
+visit_count_3_0_1 total: 0
+visit_count_3_0_1 true: 0
+visit_count_3_0_2: 1.0
+visit_count_3_0_3: 1.0
+visit_count_3_0_4: 1.0
+visit_count_3_0_5: 1.0
+visit_count_3_0_total: 0.1829988193624557
+visit_count_3_1_0 total: 0
+visit_count_3_1_0 true: 0
+visit_count_3_1_1 total: 0
+visit_count_3_1_1 true: 0
+visit_count_3_1_2: 1.0
+visit_count_3_1_3: 1.0
+visit_count_3_1_4: 1.0
+visit_count_3_1_5: 1.0
+visit_count_3_1_total: 0.15727938186254575
+visit_count_6_0_0 total: 0
+visit_count_6_0_0 true: 0
+visit_count_6_0_1: 0.023316062176165803
+visit_count_6_0_2: 1.0
+visit_count_6_0_3: 0.5651105651105651
+visit_count_6_0_4: 1.0
+visit_count_6_0_5: 1.0
+visit_count_6_0_total: 0.19155844155844154
+visit_count_6_1_0 total: 0
+visit_count_6_1_0 true: 0
+visit_count_6_1_1: 0.004330106979113602
+visit_count_6_1_2: 1.0
+visit_count_6_1_3: 0.19305856832971802
+visit_count_6_1_4: 1.0
+visit_count_6_1_5: 1.0
+visit_count_6_1_total: 0.14111427409516064

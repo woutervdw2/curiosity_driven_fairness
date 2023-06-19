@@ -461,9 +461,9 @@ def run_all(env_params, beta=1, c=1, learning_rate=0.0003, n_steps=2048, batch_s
     print('Agent tested')
 
     #Get baseline results
-    # print('Getting baseline results...')
-    # baseline_results = get_baseline_results(env, n_steps=n_test_steps)
-    # print('Baseline results obtained')
+    print('Getting baseline results...')
+    baseline_results = get_baseline_results(env, n_steps=n_test_steps)
+    print('Baseline results obtained')
 
     #Plot results
     if train:
