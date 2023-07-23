@@ -44,12 +44,12 @@ import numpy as np
 
 def _get_base_env_params():
   return attention_allocation.Params(
-      n_locations=6,
-      prior_incident_counts=(500, 500, 500, 500, 500, 500),
-      incident_rates=[8, 6, 4, 3, 1.5, 0.5],
+      n_locations=5,
+      prior_incident_counts=(500, 500, 500, 500, 500),
+      incident_rates=[6, 4, 3, 1.5, 0.5],
       n_attention_units=4,
-      miss_incident_prob=(0., 0., 0., 0., 0., 0.),
-      extra_incident_prob=(0., 0., 0., 0., 0., 0.),
+      miss_incident_prob=(0., 0., 0., 0., 0.),
+      extra_incident_prob=(0., 0., 0., 0., 0.),
       dynamic_rate=0.0)
 
 
@@ -146,6 +146,10 @@ def uniform_agent_resource_all_dynamics():
     print('\n\nUniform Random Agent, 6 attention units')
     _print_discovered_missed_incidents_report(value, report)
     output_filename = 'uniform_6units_%f.json' % value
+    
+    if not os.path.exists(FLAGS.output_dir):
+      os.makedirs(FLAGS.output_dir)
+      
     with open(os.path.join(FLAGS.output_dir, output_filename), 'w') as f:
       json.dump(report, f)
 
@@ -183,7 +187,7 @@ def mle_agent_epsilon_1_resource_all_dynamics():
 
 def mle_agent_epsilon_5_resource_all_dynamics():
   """Run experiments on a greedy-epsilon mle agent, epsilon=0.6, across dynamics."""
-  dynamic_values_to_test = [0.0, 0.01, 0.05, 0.1, 0.15]
+  dynamic_values_to_test = [0.0, 0.01, 0.05, 0.1]
   experiment = _setup_experiment()
   experiment.agent_class = allocation_agents.MLEProbabilityMatchingAgent
   experiment.agent_params = allocation_agents.MLEProbabilityMatchingAgentParams(
@@ -210,7 +214,7 @@ def mle_agent_epsilon_5_resource_all_dynamics():
 
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string('output_dir', './results_attention_6',
+flags.DEFINE_string('output_dir', './results_attention_05',
                     'Output directory to write results to.')
 
 def rl_agent_all_dynamics(model_name):
@@ -244,71 +248,114 @@ def main(argv):
 
   # greedy_fair_reports = mle_greedy_alpha5_agent_resource_all_dynamics()
   # greedy_reports = mle_greedy_agent_resource_all_dynamics()
-  # uniform_reports = uniform_agent_resource_all_dynamics()
+  uniform = uniform_agent_resource_all_dynamics()
   # mle1_reports = mle_agent_epsilon_1_resource_all_dynamics()
   # mle5_reports = mle_agent_epsilon_5_resource_all_dynamics()
-  # scalar_15 = rl_agent_all_dynamics("scalar_1.5/scalar_best/")
-  # ucb_15 = rl_agent_all_dynamics("UCB_1.5/UCB_best/")
-  # visit_count_15 = rl_agent_all_dynamics("visit_count_1.5/visit_count_best/")
   
-  scalar_3 = rl_agent_all_dynamics("scalar_3/scalar_best/")
-  ucb_3 = rl_agent_all_dynamics("UCB_3/UCB_best/")
-  visit_count_3 = rl_agent_all_dynamics("visit_count_3/visit_count_best/")
+  scalar_05 = rl_agent_all_dynamics("scalar0.5/scalar_best/best_model.zip")
+  ucb_05 = rl_agent_all_dynamics("UCB0.5/UCB_best/best_model.zip")
+  visit_count_05 = rl_agent_all_dynamics("visit_count0.5/visit_count_best/best_model.zip")
+  agent_names05 = ["uniform", "scalar_0.5", "UCB_0.5", "visit_count_0.5"]
   
-  scalar_6 = rl_agent_all_dynamics("scalar_6/scalar_best/")
-  ucb_6 = rl_agent_all_dynamics("UCB_6/UCB_best/")
-  visit_count_6 = rl_agent_all_dynamics("visit_count_6/visit_count_best/")
+  # scalar_15 = rl_agent_all_dynamics("scalar1.5/scalar_best/best_model.zip")
+  # ucb_15 = rl_agent_all_dynamics("UCB1.5/UCB_best/best_model.zip")
+  # visit_count_15 = rl_agent_all_dynamics("visit_count1.5/visit_count_best/best_model.zip")
+  # agent_names15 = ["uniform", "scalar_1.5", "UCB_1.5", "visit_count_1.5"]
+    
+  # scalar_3 = rl_agent_all_dynamics("scalar3/scalar_best/best_model.zip")
+  # ucb_3 = rl_agent_all_dynamics("UCB3/UCB_best/best_model.zip")
+  # visit_count_3 = rl_agent_all_dynamics("visit_count3/visit_count_best/best_model.zip")
+  # agent_names3 = ["uniform", "scalar_3", "UCB_3", "visit_count_3"]
+  
+  # scalar_6 = rl_agent_all_dynamics("scalar6/scalar_best/best_model.zip")
+  # ucb_6 = rl_agent_all_dynamics("UCB6/UCB_best/best_model.zip")
+  # visit_count_6 = rl_agent_all_dynamics("visit_count6/visit_count_best/best_model.zip")
+  # agent_names6 = ["uniform", "scalar_6", "UCB_6", "visit_count_6"]
   
   
-  agent_names15 = ["scalar_1.5", "UCB_1.5", "visit_count_1.5"]
-  agent_names3 = ["scalar_3", "UCB_3", "visit_count_3"]
-  agent_names6 = ["scalar_6", "UCB_6", "visit_count_6"]
+  # scalar_15_null = rl_agent_all_dynamics("scalarnull_1.5/scalar_best/best_model.zip")
+  # ucb_15_null = rl_agent_all_dynamics("UCBnull_1.5/UCB_best/best_model.zip")
+  # visit_count_15_null = rl_agent_all_dynamics("visit_countnull_1.5/visit_count_best/best_model.zip")
+  # agent_names_15_null = ["uniform", "scalar_1.5", "UCB_1.5", "visit_count_1.5"]
   
-  agent_names_ucb = ["UCB_1.5", "UCB_3", "UCB_6"]
-  agent_names_scalar = ["scalar_1.5", "scalar_3", "scalar_6"]
-  agent_names_visit_count = ["visit_count_1.5", "visit_count_3", "visit_count_6"]
+  # agent_names_ucb = ["uniform", "UCB_0.5", "UCB_1.5", "UCB_3"]
+  # agent_names_scalar = ["uniform", "scalar_1.5", "scalar_3", "scalar_6"]
+  # agent_names_visit_count = ["uniform", "visit_count_1.5", "visit_count_3", "visit_count_6"]
+  
+  dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
+    agent_names05, [
+        uniform, scalar_05, ucb_05, visit_count_05
+    ])
+  loc_dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
+    agent_names05, [
+        uniform, scalar_05, ucb_05, visit_count_05
+    ],
+    separate_locations=True)
   
   # dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
   #     agent_names15, [
-  #         scalar_15, ucb_15, visit_count_15
+  #         uniform, scalar_15, ucb_15, visit_count_15
   #     ])
   # loc_dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
-    #   agent_names15, [
-    #       scalar_15, ucb_15, visit_count_15
-    #   ],
-    #   separate_locations=True)
+  #     agent_names15, [
+  #         uniform, scalar_15, ucb_15, visit_count_15
+  #     ],
+  #     separate_locations=True)
   
   # dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
   #     agent_names3, [
-  #         scalar_3, ucb_3, visit_count_3
+  #         uniform, scalar_3, ucb_3, visit_count_3
   #     ])
   
   # loc_dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
   #     agent_names3, [
-  #         scalar_3, ucb_3, visit_count_3
+  #         uniform, scalar_3, ucb_3, visit_count_3
   #     ],  
   #     separate_locations=True)
   
-  dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
-      agent_names6, [
-          scalar_6, ucb_6, visit_count_6
-      ])
+  # dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
+  #     agent_names6, [
+  #         uniform, scalar_6, ucb_6, visit_count_6
+  #     ])
   
-  loc_dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
-      agent_names6, [
-          scalar_6, ucb_6, visit_count_6
-      ],
-      separate_locations=True)
+  # loc_dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
+  #     agent_names6, [
+  #         uniform, scalar_6, ucb_6, visit_count_6
+  #     ],
+  #     separate_locations=True)
   
+  # agent_names_ucb = ["UCB_0.5", "UCB_1.5", "UCB_3", "UCB_6"]
   # dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
   #     agent_names_ucb, [
-  #         ucb_15, ucb_3, ucb_6
+  #         ucb_05, ucb_15, ucb_3, ucb_6
   #     ])
   
   # loc_dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
   #     agent_names_ucb, [
-  #         ucb_15, ucb_3, ucb_6
+  #         ucb_05, ucb_15, ucb_3, ucb_6
   #     ],  
+  #     separate_locations=True)
+  
+  # agent_names_visit_count = ["visit_count_0.5", "visit_count_1.5", "visit_count_3", "visit_count_6"]
+  # dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
+  #     agent_names_visit_count, [
+  #         visit_count_05, visit_count_15, visit_count_3, visit_count_6
+  #     ])
+  
+  # loc_dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
+  #     agent_names_visit_count, [
+  #         visit_count_05, visit_count_15, visit_count_3, visit_count_6
+  #     ],  
+  #     separate_locations=True)
+  
+  # dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
+  #     agent_names_15_null, [
+  #         uniform, scalar_15_null, ucb_15_null, visit_count_15_null
+  #     ])
+  # loc_dataframe = attention_allocation_experiment_plotting.create_dataframe_from_results(
+  #     agent_names_15_null, [
+  #         uniform, scalar_15_null, ucb_15_null, visit_count_15_null
+  #     ],
   #     separate_locations=True)
   
   
@@ -323,10 +370,10 @@ def main(argv):
   attention_allocation_experiment_plotting.plot_discovered_occurred_ratio_range(
       dataframe, os.path.join(FLAGS.output_dir, 'discovered_to_occurred_range'))
   
-  attention_allocation_experiment_plotting.plot_occurence_action_single_dynamic(
-      json.loads(scalar_6[0.0]),
-      os.path.join(FLAGS.output_dir,
-                    'rl_agent_incidents_actions_over_time'))
+  # attention_allocation_experiment_plotting.plot_occurence_action_single_dynamic(
+  #     json.loads(scalar_6[0.0]),
+  #     os.path.join(FLAGS.output_dir,
+  #                   'rl_agent_incidents_actions_over_time'))
 
 
 if __name__ == '__main__':

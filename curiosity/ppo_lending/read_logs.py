@@ -233,6 +233,8 @@ def plot_precision_and_loans(reward, curiosity, group, save=False, sim=False, di
     loans = compute_loans_over_time(reward, curiosity, group, sim=sim, dir_path=dir_path)
     ax1.plot(precision, label=f"{reward}-c={curiosity} precision", c=color, marker=marker, ms=10, markevery=1000, alpha=0.6)
     ax2.plot(loans, label=f"{reward}-c={curiosity} loans", c='blue', marker=marker, ms=10, markevery=1000, alpha=0.6)
+    ax1.set_ylim(0.5, 0.7)
+    ax2.set_ylim(0, 1)
     ax1.legend(loc='upper left')
     ax2.legend(loc='upper right')
     ax1.grid()
@@ -267,13 +269,15 @@ def barplot_precision(reward, curiosity, group, save=False, sim=False, dir_path=
 if __name__ == "__main__":
     dir_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))+"/"
     rewards = ['visit_count', "UCB", "scalar"]
-    curiosities = [6]
-    groups = [1]
-    # plot_precision(rewards, curiosities, groups, save=True, sim=True, dir_path=dir_path)
+    curiosities = [1.5]
+    groups = [0]
+    plot_precision(rewards, curiosities, groups, save=True, sim=True, dir_path=dir_path)
     # barplot_precision(rewards, curiosities, groups, save=True, sim=True, dir_path=dir_path) 
-    # plot_recall(rewards, curiosities, groups, save=True, sim=True, dir_path=dir_path)
-    # plot_precision_and_loans('scalar', 3, 1, save=True, sim=True, dir_path=dir_path)
-    # plot_precision_and_loans('scalar', 1.5, 1, save=True, sim=True, dir_path=dir_path)
-    plot_loans(rewards, curiosities, groups, save=True, sim=True, dir_path=dir_path)
+    plot_recall(rewards, curiosities, groups, save=True, sim=True, dir_path=dir_path)
+    plot_precision_and_loans('visit_count', 1.5, 1, save=True, sim=True, dir_path=dir_path)
+    plot_precision_and_loans('scalar', 3, 1, save=True, sim=True, dir_path=dir_path)
+    plot_precision_and_loans('UCB', 1.5, 1, save=True, sim=True, dir_path=dir_path)
+    plot_precision_and_loans('scalar', 3, 1, save=True, sim=True, dir_path=dir_path)
+    # plot_loans(rewards, curiosities, groups, save=True, sim=True, dir_path=dir_path)
     
     

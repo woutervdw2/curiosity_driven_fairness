@@ -122,18 +122,20 @@ class Experiment(object):
   # Environment's relevant history.
   history = attr.ib(factory=lambda: [])
 
-  model_name = attr.ib(default="allocation/visit_count_best")
+  model_name = attr.ib(default=None)
   
   def build_scenario(self):
     """Instantiates and returns an environment, agent pair."""
     env = self.env_class(self.env_params)
-
-    model_name = f"allocation/{self.model_name}"
-    agent = rl_agents.RlAgent(observation_space=env.observation_space,
-                              reward_fn=None,
-                                action_space=env.action_space,
-                                model_kind="allocation",
-                                model_name=model_name)
+    if self.model_name is None:
+      agent = self.agent_class(env.action_space, None, env.observation_space)
+    else:
+      self.model_name = f"allocation/{self.model_name}"
+      agent = rl_agents.RlAgent(observation_space=env.observation_space,
+                                reward_fn=None,
+                                  action_space=env.action_space,
+                                  model_kind="allocation",
+                                  model_name=self.model_name)
 
     return env, agent
 

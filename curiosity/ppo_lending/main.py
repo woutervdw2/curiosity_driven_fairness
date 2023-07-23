@@ -23,17 +23,27 @@ from tqdm import tqdm
 
 def main():
     #Constants
-    LEARNING_STEPS = [500000]
-    MODELS = ['UCB', 'visit_count', 'scalar']
-    curiosity = [1.5]
+    LEARNING_STEPS = [1000000]
+    MODELS = ['UCB', 'scalar', 'visit_count']
+    curiosity = [1.5, 3 , 6]
     for c in curiosity:
         for n_steps in LEARNING_STEPS:
-            model_name = f"ppo_lending/{n_steps}_{c}"
+            #Static models
+            model_name = f"ppo_lending/{n_steps}_{c}_static"
+            
+            #Sequential training
+            # model_name = f"ppo_lending/{n_steps}_{c}_static"
+            
             # Initialize environment
             group_0_prob = 0.5
             bank_starting_cash = np.float32(100)
             interest_rate = 1.0
+            
+            #Sequential environment
             cluster_shift_increment = 0.01
+            #Static environment
+            # cluster_shift_increment = 0.0
+            
             cluster_probabilities = lending_params.DELAYED_IMPACT_CLUSTER_PROBS
 
             env_params = lending_params.DelayedImpactParams(
@@ -45,24 +55,24 @@ def main():
                     cluster_shift_increment=cluster_shift_increment
                 )
             
-            # # # # # # # run_all arguments
-            # train_args = {
-            #     'verbose': 0,
-            #     'learning_steps': n_steps,
-            #     'show_plot': True,
-            #     'model_name': model_name,
-            #     'beta': c,
-            #     'c': c
-            # }
+            # # # # # run_all arguments
+            train_args = {
+                'verbose': 0,
+                'learning_steps': n_steps,
+                'show_plot': True,
+                'model_name': model_name,
+                'beta': c,
+                'c': c
+            }
 
-            # #While training print terminal output colored red
-            # sys.stdout.write("\033[1;31m")
-            # #Train final agents
-            # print("Training final agents"+'-'*100)
-            # final_training_agents(env_params, models=MODELS, kwargs=train_args)
+            # While training print terminal output colored red
+            sys.stdout.write("\033[1;31m")
+            #Train final agents
+            print("Training final agents"+'-'*100)
+            final_training_agents(env_params, models=MODELS, kwargs=train_args)
 
 
-            #Compare final agents
+            # Compare final agents
             test_args = {
                 'n_test_steps': 10000,
                 'train': False,
@@ -75,7 +85,7 @@ def main():
             print("Comparing agents on test environments"+'-'*100)
             compare_agents(env_params, models=MODELS, kwargs=test_args)
 
-            #While assessing print terminal output colored yellow
+            # While assessing print terminal output colored yellow
             sys.stdout.write("\033[1;33m")
             print("Assessing models"+'-'*100)
             for model in MODELS:

@@ -27,14 +27,15 @@ EQUALIZE_OPPORTUNITY = threshold_policies.ThresholdPolicy.EQUALIZE_OPPORTUNITY
 
 def create_flags(reward='scalar', model_name='ppo_lending'):
   
-  if not os.path.exists(f'models/{model_name}{reward}'):
-   os.mkdir(f'models/{model_name}{reward}')
-
+  if not os.path.exists(f'{os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))}/models/{model_name}{reward}'):
+    os.mkdir(f'{os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))}/models/{model_name}{reward}')
+  if not os.path.exists(f'{os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))}/models/{model_name}{reward}/{reward}'):
+    os.mkdir(f'{os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))}/models/{model_name}{reward}/{reward}')
   """Create flags for the experiment."""
   flags.DEFINE_integer('num_steps', 20000, 'Number of steps to run the simulation.')
   flags.DEFINE_bool('equalize_opportunity', False, 'If true, apply equality of opportunity constraints.')
-  flags.DEFINE_string('plots_directory', f"{os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))}/models/{model_name}{reward}/{reward}_best/", 'Directory to write out plots.')
-  flags.DEFINE_string('outfile', f"{os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))}/models/{model_name}{reward}/{reward}_best/outfile.txt", 'Path to write out results.')
+  flags.DEFINE_string('plots_directory', f"{os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))}/models/{model_name}{reward}/{reward}/", 'Directory to write out plots.')
+  flags.DEFINE_string('outfile', f"{os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))}/models/{model_name}{reward}/{reward}/outfile.txt", 'Path to write out results.')
   FLAGS = flags.FLAGS
   FLAGS(sys.argv)
   return FLAGS
@@ -61,7 +62,7 @@ def main(reward='scalar', model_name='ppo_lending'):
     title = (f"{reward}")
     metrics = result['metric_results']
     #Write results to file
-    with open(f'models/{model_name}{reward}/results.txt', 'w') as f:
+    with open(f'{os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))}/models/{model_name}{reward}/{reward}/results.txt', 'w') as f:
        f.write(f"""{[n.state.applicant_features for n in result["environment"]["history"]]} \n
                 {[n.state.group_id for n in result["environment"]["history"]]} \n
                 {[n.action for n in result["environment"]["history"]]} \n

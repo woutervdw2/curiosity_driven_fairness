@@ -47,6 +47,7 @@ def compute_cond_dem_parity(reward, curiosity, dir_path):
             print("Computing conditional demographic parity for reward: ", r, " and curiosity: ", c, "\n")
             dict = read_txt_file(r, c, dir_path)
             y_true = dict[f"{r}_{c}"]['group0_default'] + dict[f"{r}_{c}"]['group1_default']
+            print(len(y_true), "number of true values")
             y_true = [False if x else True for x in y_true]
             y_pred = dict[f"{r}_{c}"]['group0_actions'] + dict[f"{r}_{c}"]['group1_actions']
             group = [0]*len(dict[f"{r}_{c}"]['group0_actions']) + [1]*len(dict[f"{r}_{c}"]['group1_actions'])
@@ -64,6 +65,8 @@ def compute_cond_dem_parity(reward, curiosity, dir_path):
                         save_dict[f"{r}_{c}_{group}_{features}_total"] += 1
                     except:
                         save_dict[f"{r}_{c}_{group}_{features}_total"] = 1
+                        save_dict[f"{r}_{c}_{group}_{features}_true"] = 0
+            group_probs = {}
             for group in [0,1]:
                 group_total = 0
                 len_group = len(dict[f"{r}_{c}"][f'group{group}_actions'])
@@ -73,12 +76,30 @@ def compute_cond_dem_parity(reward, curiosity, dir_path):
                             true = save_dict[f'{r}_{c}_{group}_{features}_true']
                             total = save_dict[f'{r}_{c}_{group}_{features}_total']
                             group_total += (true/total)*(total/len_group)
-                            f.write(f"{r}_{c}_{group}_{features}: {true/total}\n")
+                            group_probs[f'{r}_{c}_{group}_{features}'] = (true/total)
+                            f.write(f"{r}_{c}_{group}_{features} true: {true}\n")
+                            f.write(f"{r}_{c}_{group}_{features} total: {total}\n")
+                            f.write(f"{r}_{c}_{group}_{features} P: {true/total}\n")
                         except:
                             f.write(f"{r}_{c}_{group}_{features} total: 0\n")
                             f.write(f"{r}_{c}_{group}_{features} true: 0\n")
+                            group_probs[f'{r}_{c}_{group}_{features}'] = 1
                 with open(f"{dir_path}/fairness/cond_dem_parity.txt", "a") as f:
                     f.write(f"{r}_{c}_{group}_total: {group_total}\n")
+            
+            for features in range(0,6):
+                P_0 = group_probs[f'{r}_{c}_0_{features}']
+                P_1 = group_probs[f'{r}_{c}_1_{features}']
+                if not P_0 == 0:
+                    ratio = P_1/P_0
+                else:
+                    if P_1 == 0:
+                        ratio = 1
+                    else:
+                        ratio = 100
+            
+                with open(f"{dir_path}/fairness/cond_dem_parity.txt", "a") as f:
+                    f.write(f"{r}_{c}_{features} ratio: {ratio}\n")
                     
 def pred_parity(reward, curiosity, dir_path):
 

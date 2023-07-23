@@ -17,3 +17,5 @@ sklearn
 statsmodels
 tensorflow
 tqdm
+seaborn
+stable-baselines3

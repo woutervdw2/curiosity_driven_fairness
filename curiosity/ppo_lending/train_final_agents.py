@@ -74,22 +74,4 @@ def final_training_agents(env_params, models, path='plots/', **kwargs):
 
 
 if __name__ == '__main__':
-    LEARNING_STEPS = 50000
-
-    #Define environment
-    group_0_prob = 0.5
-    bank_starting_cash = np.float32(1000)
-    interest_rate = 1.0
-    cluster_shift_increment = 0.01
-    cluster_probabilities = lending_params.DELAYED_IMPACT_CLUSTER_PROBS
-
-    env_params = lending_params.DelayedImpactParams(
-            applicant_distribution=lending_params.two_group_credit_clusters(
-                cluster_probabilities= cluster_probabilities,
-                group_likelihoods=[group_0_prob, 1 - group_0_prob]),
-            bank_starting_cash=bank_starting_cash,
-            interest_rate=interest_rate,
-            cluster_shift_increment=cluster_shift_increment,
-        )
-                
-    final_training_agents(env_params, models='scalar', learning_steps=LEARNING_STEPS, show_plot=False)
+    print(choose_parms())

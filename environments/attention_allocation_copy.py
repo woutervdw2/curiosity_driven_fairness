@@ -335,13 +335,13 @@ class LocationAllocationEnv(core.FairnessEnv):
 
   def _is_done(self):
     """Never returns true because there is no end case to this environment."""
-    if not self.test:
-      done = bool(len(self.state_history) >= self.max_steps)
-      if done:
-        self.max_steps *= 1.03
-        print("done")
-    else:
-      done = bool(len(self.state_history) >= 3000)
+    # if not self.test:
+    #   done = bool(len(self.state_history) >= self.max_steps)
+    #   if done:
+    #     self.max_steps *= 1.03
+    #     print("done")
+    # else:
+    done = bool(len(self.state_history) >= 10000)
     return done
 
   def _step_impl(self, state, action):

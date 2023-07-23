@@ -112,6 +112,7 @@ def plot_occurence_action_single_dynamic(report, file_path=''):
   plt.xticks(fontsize=MEDIUM_FONTSIZE)
   plt.yticks(fontsize=MEDIUM_FONTSIZE)
 
+
   incidents_data = np.asarray([item[0] for item in history])
   plt.subplot(1, 2, 2)
   for location in range(n_locations):
@@ -120,7 +121,9 @@ def plot_occurence_action_single_dynamic(report, file_path=''):
   plt.ylabel('Incidents occurred', fontsize=LARGE_FONTSIZE)
   plt.xticks(fontsize=MEDIUM_FONTSIZE)
   plt.yticks(fontsize=MEDIUM_FONTSIZE)
+  
   plt.savefig(file_path + '.pdf', bbox_inches='tight')
+  
 
 
 def plot_discovered_missed_clusters(dataframe, file_path=''):
@@ -132,16 +135,17 @@ def plot_discovered_missed_clusters(dataframe, file_path=''):
       y='missed_incidents',
       data=dataframe,
       hue='agent_type',
+      kind='box',
       palette='deep',
       height=plot_height,
       aspect=aspect_ratio,
-      s=8,
       legend=False)
   plt.xlabel('Dynamic factor', fontsize=LARGE_FONTSIZE)
   plt.ylabel('Missed incidents for each location', fontsize=LARGE_FONTSIZE)
   plt.xticks(fontsize=MEDIUM_FONTSIZE)
   plt.yticks(fontsize=MEDIUM_FONTSIZE)
   plt.legend(fontsize=MEDIUM_FONTSIZE, title_fontsize=MEDIUM_FONTSIZE)
+  plt.ylim(0, 100000)
   plt.tight_layout()
   plt.savefig(file_path + '_missed.pdf')
 
@@ -150,15 +154,16 @@ def plot_discovered_missed_clusters(dataframe, file_path=''):
       y='discovered_incidents',
       data=dataframe,
       hue='agent_type',
+      kind='box',
       height=plot_height,
       aspect=aspect_ratio,
-      s=8,
       legend=False)
   plt.xlabel('Dynamic factor', fontsize=LARGE_FONTSIZE)
   plt.ylabel('Discovered incidents for each location', fontsize=LARGE_FONTSIZE)
   plt.xticks(fontsize=MEDIUM_FONTSIZE)
   plt.yticks(fontsize=MEDIUM_FONTSIZE)
   plt.legend(fontsize=MEDIUM_FONTSIZE, title_fontsize=MEDIUM_FONTSIZE)
+  plt.ylim(0, 15000)
   plt.tight_layout()
   plt.savefig(file_path + '_discovered.pdf')
 
@@ -185,6 +190,7 @@ def plot_total_miss_discovered(dataframe, file_path=''):
   plt.xticks(fontsize=MEDIUM_FONTSIZE)
   plt.yticks(fontsize=MEDIUM_FONTSIZE)
   plt.legend(fontsize=MEDIUM_FONTSIZE, title_fontsize=MEDIUM_FONTSIZE)
+  plt.ylim(0, 700000)
   plt.savefig(file_path + '_missed.pdf', bbox_inches='tight')
 
   sns.catplot(
@@ -201,6 +207,7 @@ def plot_total_miss_discovered(dataframe, file_path=''):
   plt.ylabel('Total discovered incidents', fontsize=LARGE_FONTSIZE)
   plt.xticks(fontsize=MEDIUM_FONTSIZE)
   plt.yticks(fontsize=MEDIUM_FONTSIZE)
+  plt.ylim(0, 36000)
   plt.legend(fontsize=MEDIUM_FONTSIZE, title_fontsize=MEDIUM_FONTSIZE)
   plt.savefig(file_path + '_discovered.pdf', bbox_inches='tight')
 
@@ -225,6 +232,7 @@ def plot_discovered_occurred_ratio_range(dataframe, file_path=''):
   plt.ylabel('Discovered/occurred range', fontsize=LARGE_FONTSIZE)
   plt.xticks(fontsize=MEDIUM_FONTSIZE)
   plt.yticks(fontsize=MEDIUM_FONTSIZE)
+  plt.ylim(0, 0.8)
   # plt.legend(fontsize=MEDIUM_FONTSIZE, title_fontsize=MEDIUM_FONTSIZE)
   plt.savefig(file_path + '.pdf', bbox_inches='tight')
 
@@ -241,6 +249,7 @@ def plot_discovered_occurred_ratio_range(dataframe, file_path=''):
   plt.ylabel('Delta', fontsize=LARGE_FONTSIZE)
   plt.xticks(fontsize=MEDIUM_FONTSIZE)
   plt.yticks(fontsize=MEDIUM_FONTSIZE)
+  plt.ylim(0, 1)
   # plt.legend(fontsize=MEDIUM_FONTSIZE, title_fontsize=MEDIUM_FONTSIZE)
   plt.savefig(file_path + '_weighted.pdf', bbox_inches='tight')
 
@@ -259,11 +268,12 @@ def plot_discovered_occurred_ratio_locations(dataframe, file_path=''):
       hue='agent_type',
       height=plot_height,
       aspect=aspect_ratio,
-      s=8)
+      kind='box')
   plt.xlabel('Dynamic factor', fontsize=LARGE_FONTSIZE)
   plt.ylabel('Discovered/occurred', fontsize=LARGE_FONTSIZE)
   plt.xticks(fontsize=MEDIUM_FONTSIZE)
   plt.yticks(fontsize=MEDIUM_FONTSIZE)
+  plt.ylim(0, 1)
   # plt.legend(fontsize=MEDIUM_FONTSIZE, title_fontsize=MEDIUM_FONTSIZE)
   plt.savefig(file_path + '.pdf', bbox_inches='tight')
 
@@ -275,10 +285,11 @@ def plot_discovered_occurred_ratio_locations(dataframe, file_path=''):
       hue='agent_type',
       height=plot_height,
       aspect=aspect_ratio,
-      s=8)
+      kind='box')
   plt.xlabel('Dynamic factor', fontsize=LARGE_FONTSIZE)
   plt.ylabel('Discovered/occurred weighted', fontsize=LARGE_FONTSIZE)
   plt.xticks(fontsize=MEDIUM_FONTSIZE)
   plt.yticks(fontsize=MEDIUM_FONTSIZE)
+  plt.ylim(0, 1)
   # plt.legend(fontsize=MEDIUM_FONTSIZE, title_fontsize=MEDIUM_FONTSIZE)
   plt.savefig(file_path + '_weighted.pdf', bbox_inches='tight')

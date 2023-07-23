@@ -109,7 +109,7 @@ def compare_agents(env_params, models, **kwargs):
 
     PLOT_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))+'/plots/'
     if 'model_name' in kwargs['kwargs']:
-        PLOT_PATH += kwargs['kwargs']['model_name']+'/'   
+        PLOT_PATH += kwargs['kwargs']['model_name']   
 
     #Check path exists, else create path
     if not os.path.exists(PLOT_PATH):

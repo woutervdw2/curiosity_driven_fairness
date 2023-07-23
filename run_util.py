@@ -89,17 +89,18 @@ def run_simulation(env, agent, metrics, num_steps, seed=100, agent_seed=50):
     if done:
       break
     
-    try:
-      with open(os.path.abspath(os.path.join(os.path.dirname(__file__)))+"/models/"+agent.model_name[:-10]+"sim_results.txt", "w") as f:
-        f.write(f"""{actions_group0}\n
-                {actions_group1}\n  
-                {default0}\n
-                {default1}\n
-                {group0_features}\n
-                {group1_features}""")
-    except AttributeError:
-      pass
-    
+  try:
+    print("Sim results path: ", os.path.abspath(os.path.join(os.path.dirname(__file__)))+"/models/"+agent.model_name[:-10]+"sim_results.txt")
+    with open(os.path.abspath(os.path.join(os.path.dirname(__file__)))+"/models/"+agent.model_name[:-10]+"sim_results.txt", "w") as f:
+      f.write(f"""{actions_group0}\n
+              {actions_group1}\n  
+              {default0}\n
+              {default1}\n
+              {group0_features}\n
+              {group1_features}""")
+  except AttributeError:
+    pass
+  
   print("Measuring metrics")
   if isinstance(metrics, list):
     return [metric.measure(env) for metric in metrics]
